@@ -16,12 +16,12 @@ def build_actor(states, bounds, action_size, trainable, scope, reuse):
     with tf.variable_scope(scope):
 
         conv_i = tf.layers.conv1d(states[:,0:60,:], filters = 40,kernel_size = 50, strides = 1, padding = "same", trainable=trainable,
-                                 activation=tf.nn.relu, name='conv_i', reuse = reuse)
+                                 activation=tf.nn.leaky_relu, name='conv_i', reuse = reuse)
         conv_v = tf.layers.conv1d(states[:,60:120,:], filters=40,kernel_size = 50, strides = 1, padding = "same", trainable=trainable,
-                                 activation=tf.nn.relu, name='conv_v', reuse = reuse)
+                                 activation=tf.nn.leaky_relu, name='conv_v', reuse = reuse)
         conv_i_2 = tf.layers.conv1d(conv_i, filters=30, kernel_size=20,
                                     trainable=trainable, padding = "same",
-                                    activation=tf.nn.relu, name='conv_i_2', reuse = reuse)
+                                    activation=tf.nn.leaky_relu, name='conv_i_2', reuse = reuse)
         conv_i_2 = tf.layers.max_pooling1d(conv_i_2,pool_size = 2, strides = 1)
 
         conv_v_2 = tf.layers.conv1d(conv_v, filters=20, kernel_size=20,
