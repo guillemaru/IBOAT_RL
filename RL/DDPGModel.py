@@ -29,7 +29,7 @@ def build_actor(states, bounds, action_size, trainable, scope, reuse):
                                     activation=tf.nn.relu, name='conv_v_2', reuse = reuse)
         conv_v_2 = tf.layers.max_pooling1d(conv_v_2,pool_size = 2, strides = 1)
         hidden_i = tf.layers.dense(conv_i_2, 120, trainable=trainable,
-                                   activation=tf.nn.relu, name='dense_i', reuse = reuse)
+                                   activation=tf.nn.leaky_relu, name='dense_i', reuse = reuse)
         hidden_v = tf.layers.dense(conv_v_2, 120, trainable=trainable,
                                    activation=tf.nn.relu, name='dense_v', reuse = reuse)
         hidden_i_2 = tf.layers.dense(hidden_i, 60, trainable=trainable,
