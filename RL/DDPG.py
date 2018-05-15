@@ -153,6 +153,7 @@ class DDPGAgent:
             A.append(np.reshape(action,(self.action_size,1) ))
             R.append(reward)
             S_.append(np.reshape(next_state, (2*self.state_size,1)))
+        
 
         q, _, _, critic_loss, actor_loss = self.sess.run(
             [self.network.q_values_of_given_actions, self.network.critic_train_op, self.network.actor_train_op,
