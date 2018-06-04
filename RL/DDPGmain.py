@@ -1,6 +1,6 @@
 import sys
 
-sys.path.append("../../../sim/")
+sys.path.append("../sim/")
 import tensorflow as tf
 #import matplotlib.pyplot as plt
 import numpy as np
@@ -37,8 +37,8 @@ WH = w.generateWind()
 '''
 Random initial conditions 
 '''
-hdg0_rand_vec=(0,2,4,6,8,10,13,15,17,20)
-#hdg0_rand_vec=(0,7,13)
+# hdg0_rand_vec=(0,2,4,6,8,10,13,15,17,20)
+hdg0_rand_vec=(0,7,13)
 action_size = 2
 action_size_DDPG = 1
 

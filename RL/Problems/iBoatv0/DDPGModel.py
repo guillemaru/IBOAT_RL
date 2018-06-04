@@ -14,7 +14,7 @@ def build_actor(states, bounds, action_size, trainable, scope, reuse):
     :return: actions chosen by the actor network for each state of the batch
     """
     with tf.variable_scope(scope):
-        '''
+        
         # Convolutional and Pooling Layers #1 for incidence
         conv1_i = tf.layers.conv1d(
           inputs=states[:,0:60,:],
@@ -75,12 +75,12 @@ def build_actor(states, bounds, action_size, trainable, scope, reuse):
 
         dense3 = tf.layers.dense(inputs=dense2,units=64, activation=tf.nn.relu,trainable=trainable,name='dense3', reuse = reuse)
         dense3 = tf.layers.batch_normalization(dense3, trainable = trainable, name = 'bnorm3')
-        print("penultima layer shape: ",dense3.shape)
+        #print("penultima layer shape: ",dense3.shape)
         #Finql value that will be scaled between 0 and 1
         actions_unscaled = tf.layers.dense(dense3, action_size,
                                            trainable=trainable,
                                            name='dense_i_v_out', reuse = reuse)
-        print("ultima layer shape: ",actions_unscaled.shape)
+        #print("ultima layer shape: ",actions_unscaled.shape)
         # bound the actions to the valid range
         low_bound, high_bound = bounds
         valid_range = high_bound - low_bound
@@ -160,7 +160,7 @@ def build_actor(states, bounds, action_size, trainable, scope, reuse):
         low_bound, high_bound = bounds
         valid_range = high_bound - low_bound
         actions = low_bound + tf.nn.sigmoid(actions_unscaled) * valid_range
-        
+        '''
         
     return actions
 

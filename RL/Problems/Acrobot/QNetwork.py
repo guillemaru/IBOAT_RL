@@ -118,16 +118,13 @@ class Network:
 
     # Actor definition :
     def generate_actor_network(self, states, trainable, reuse):
-        hidden = tf.layers.dense(states, 8,
+        hidden = tf.layers.dense(states, 400,
                                  trainable=trainable, reuse=reuse,
                                  activation=tf.nn.relu, name='dense')
-        hidden_2 = tf.layers.dense(hidden, 8,
-                                   trainable=trainable, reuse=reuse,
-                                   activation=tf.nn.relu, name='dense_1')
-        hidden_3 = tf.layers.dense(hidden_2, 8,
+        hidden_2 = tf.layers.dense(hidden, 300,
                                    trainable=trainable, reuse=reuse,
                                    activation=tf.nn.relu, name='dense_2')
-        actions_unscaled = tf.layers.dense(hidden_3, self.action_size,
+        actions_unscaled = tf.layers.dense(hidden_2, self.action_size,
                                            trainable=trainable, reuse=reuse,
                                            name='dense_3')
         # bound the actions to the valid range
@@ -139,16 +136,13 @@ class Network:
     # Critic definition :
     def generate_critic_network(self, states, actions, trainable, reuse):
         state_action = tf.concat([states, actions], axis=1)
-        hidden = tf.layers.dense(state_action, 8,
+        hidden = tf.layers.dense(state_action, 400,
                                  trainable=trainable, reuse=reuse,
                                  activation=tf.nn.relu, name='dense')
-        hidden_2 = tf.layers.dense(hidden, 8,
-                                   trainable=trainable, reuse=reuse,
-                                   activation=tf.nn.relu, name='dense_1')
-        hidden_3 = tf.layers.dense(hidden_2, 8,
+        hidden_2 = tf.layers.dense(hidden, 300,
                                    trainable=trainable, reuse=reuse,
                                    activation=tf.nn.relu, name='dense_2')
-        q_values = tf.layers.dense(hidden_3, 1,
+        q_values = tf.layers.dense(hidden_2, 1,
                                    trainable=trainable, reuse=reuse,
                                    name='dense_3')
         return q_values

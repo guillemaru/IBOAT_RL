@@ -78,6 +78,14 @@ class Network:
             update_slow_target_ops.append(update_slow_target_actor_op)
 
         for i, slow_target_var in enumerate(self.slow_target_critic_vars):
+            print()
+            print("Estoy en el update target")
+            print("i es : ",i)
+            print("shape de critic vars es: ",self.critic_vars[i].shape)
+            print("name de critic vars es: ",self.critic_vars[i].name)
+            print("shape de slow target critic vars es: ",slow_target_var.shape)
+            print("name de slow target critic vars es: ",slow_target_var.name)
+            print()
             update_slow_target_critic_op = slow_target_var.assign(
                 parameters.UPDATE_TARGET_RATE * self.critic_vars[i] +
                 (1 - parameters.UPDATE_TARGET_RATE) * slow_target_var)
@@ -173,10 +181,13 @@ class Network:
 
         flat = tf.contrib.layers.flatten(pool3)
 
-        hidden = tf.layers.dense(flat, 32,
+        hidden = tf.layers.dense(flat, 128,
                                  trainable=trainable, reuse=reuse,
                                  activation=tf.nn.leaky_relu, name='dense')
-        hidden2 = tf.layers.batch_normalization(hidden)
+        print("Shape before batch normalization: ",hidden.shape)
+        hidden2 = tf.layers.batch_normalization(hidden, 
+                                          center=True, scale=True)
+        print("Shape after batch normalization: ",hidden2.shape)
         hidden_2 = tf.layers.dense(hidden2, 16,
                                    trainable=trainable, reuse=reuse,
                                    activation=tf.nn.leaky_relu, name='dense_1')

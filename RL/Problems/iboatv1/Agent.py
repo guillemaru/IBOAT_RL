@@ -15,7 +15,7 @@ from Displayer import DISPLAYER
 import parameters
 
 import sys
-sys.path.append("../sim/")
+sys.path.append("../../../sim/")
 from Simulator import TORAD
 from mdp import ContinuousMDP
 from environment import wind

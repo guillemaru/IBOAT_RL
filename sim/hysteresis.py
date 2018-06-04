@@ -5,10 +5,10 @@ from numpy import loadtxt
 from scipy.interpolate import interp1d
 
 
-i_dc = loadtxt("../Data/i_dc.txt", comments="#", delimiter=",", unpack=False)
-v_dc = loadtxt("../Data/v_dc.txt", comments="#", delimiter=",", unpack=False)
-i_c = loadtxt("../Data/i_c.txt", comments="#", delimiter=",", unpack=False)
-v_c = loadtxt("../Data/v_c.txt", comments="#", delimiter=",", unpack=False)
+i_dc = loadtxt("../../../Data/i_dc.txt", comments="#", delimiter=",", unpack=False)
+v_dc = loadtxt("../../../Data/v_dc.txt", comments="#", delimiter=",", unpack=False)
+i_c = loadtxt("../../../Data/i_c.txt", comments="#", delimiter=",", unpack=False)
+v_c = loadtxt("../../../Data/v_c.txt", comments="#", delimiter=",", unpack=False)
 
 V_c = interp1d(i_c, v_c)
 V_dc = interp1d(i_dc, v_dc)

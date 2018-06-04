@@ -56,7 +56,7 @@ class Agent:
             render = (ep % parameters.RENDER_FREQ == 0 and parameters.DISPLAY)
             self.env.set_render(render)
 
-            while episode_step < parameters.MAX_EPISODE_STEPS and not done:
+            while episode_step < parameters.MAX_EPISODE_STEPS or not done:
 
                 # choose action based on deterministic policy
                 a, = self.sess.run(self.network.actions,
@@ -97,7 +97,7 @@ class Agent:
                 self.total_steps += 1
 
             if ep % parameters.DISP_EP_REWARD_FREQ == 0:
-                print('Episode %2i, Reward: %7.3f, Steps: %i, Final noise scale: %7.3f' %
+                print('Episode %2i, Reward: %7.3f, Steps: %2i, Final noise scale: %7.3f' %
                       (ep, episode_reward, episode_step, noise_scale))
             DISPLAYER.add_reward(episode_reward)
 

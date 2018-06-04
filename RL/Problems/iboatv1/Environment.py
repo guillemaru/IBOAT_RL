@@ -1,6 +1,6 @@
 import sys
 
-sys.path.append("../sim/")
+sys.path.append("../../../sim/")
 
 import os
 

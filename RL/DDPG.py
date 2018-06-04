@@ -12,13 +12,11 @@ class DDPGAgent:
     The aim of this class is to learn an optimal policy via an actor-critic structure with 2 separated Convolutional Neural Networks.
     It uses the Deep Deterministic Policy Gradient to update the actor network.
     This model deals with a continuous space of actions on the rudder, chosen between lower_bound and upper_bound
-
     :param int state_size: length of the state input (for convolutionnal layers).
     :param int action_size:  number of continuous action output by the network.
     :param float lower_bound: minimum value for rudder action.
     :param float upper_bound: maximum value for rudder action.
     :param tensorflow.session sess: initialized tensorflow session within which the agent will be trained.
-
     :ivar deque memory: last-in first-out list of the batch buffer.
     :ivar float gamma:  discount factor.
     :ivar float epsilon: exploration rate.
@@ -51,9 +49,10 @@ class DDPGAgent:
         '''
 
         self.network = Network(self.state_size, self.action_size,
-                               self.lower_bound, self.upper_bound)
+                               self.lower_bound, self.upper_bound, self.actor_learning_rate,
+                               self.critic_learning_rate, self.gamma, self.update_target)
         self.sess.run(tf.global_variables_initializer())
-        self.sess.run(self.network.update_slow_targets_op)
+        self.sess.run(self.network.target_init)
 
 
     '''
@@ -64,7 +63,6 @@ class DDPGAgent:
         """
         Remember a transition defined by an action `action` taken from a state `state` yielding a transition to a next
         state `next_state` and a reward `reward`. [s, a ,r, s']
-
         :param np.array state: initial state (s).
         :param int action: action (a).
         :param float reward: reward received from transition (r).
@@ -75,7 +73,6 @@ class DDPGAgent:
     def act(self,state):
         """
         Calculate the action given by the Actor network's current weights
-
         :param state: state in which we want to chose an action.
         :return: the greedy action according to actor network
         """
@@ -87,7 +84,6 @@ class DDPGAgent:
     def noise_decay(self,e):
         """
         Applies decay on noisy epsilon-greedy actions
-
         :param e: current episode playing during learning
         """
         if e % self.epsilon_decay_period ==0 and self.epsilon > self.epsilon_min and e != 0:
@@ -98,7 +94,6 @@ class DDPGAgent:
         """
         With probability epsilon, returns a random action between bounds
         With probability 1 - epsilon, returns the action given by the Actor network's current weights
-
         :param state: state in which we want to chose an action.
         :return: a random action or the action given by actor
         """
@@ -116,7 +111,6 @@ class DDPGAgent:
     def evaluate(self, state, action):
         """
         Evaluate the Q-value of a state-action pair  using the critic neural network.
-
         :param np.array state: state that we want to evaluate.
         :param float action: action that we want to evaluate (has to be between permitted bounds)
         :return: The continuous action value.
@@ -137,7 +131,6 @@ class DDPGAgent:
     def replay(self, batch_size):
         """
         Performs an update of both actor and critic networks on a minibatch chosen among the experience replay memory.
-
         :param batch_size: number of samples used in the experience replay memory for the fit.
         :return: the average losses for actor and critic over the replay batch.
         """
@@ -152,7 +145,6 @@ class DDPGAgent:
             A.append(np.reshape(action,(self.action_size,1) ))
             R.append(reward)
             S_.append(np.reshape(next_state, (2*self.state_size,1)))
-        
 
         q, _, _, critic_loss, actor_loss = self.sess.run(
             [self.network.q_values_of_given_actions, self.network.critic_train_op, self.network.actor_train_op,
@@ -162,7 +154,7 @@ class DDPGAgent:
                 self.network.action_ph: np.asarray(A),
                 self.network.reward_ph: np.asarray(R),
                 self.network.next_state_ph: np.asarray(S_),
-                self.network.is_not_terminal_ph: np.asarray(END)})
+                self.network.is_not_done_ph: np.asarray(END)})
         #actor_losses = np.array(actor_scores.history['loss'])
         #critic_losses = np.array(critic_scores.history['loss'])
         #actor = np.sum(actor_losses) / len(actor_losses)
