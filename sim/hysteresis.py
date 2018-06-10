@@ -63,6 +63,8 @@ class Hysteresis:
             self.e=0
             v=V_c(i)
         else:
+            print("i = ",i)
+            print("e = ",self.e)
             raise ValueError("Speed calculation crashed")
         return (v)
 

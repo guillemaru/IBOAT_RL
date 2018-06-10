@@ -19,7 +19,7 @@ if __name__ == '__main__':
         try:
             agent.run()
         except KeyboardInterrupt:
-            pass
+            agent.save("NetworkParam/FinalParam")
         print("End of the run")
         DISPLAYER.disp()
 

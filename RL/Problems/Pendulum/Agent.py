@@ -100,9 +100,13 @@ class Agent:
                 print('Episode %2i, Reward: %7.3f, Steps: %i, Final noise scale: %7.3f' %
                       (ep, episode_reward, episode_step, noise_scale))
             DISPLAYER.add_reward(episode_reward)
+            # We save CNN weights every 1000 epochs
+            if ep % 1000 == 0 and ep != 0:
+                self.save("NetworkParam/"+ str(ep) +"_epochs")
 
 
     def play(self, number_run):
+        self.load("NetworkParam/FinalParam")
         print("Playing for", number_run, "runs")
 
         self.env.set_render(True)
@@ -136,3 +140,20 @@ class Agent:
 
     def close(self):
         self.env.close()
+
+    def save(self, name):
+        """
+        Save the weights of both of the networks into a .ckpt tensorflow session file
+        :param name: Name of the file where the weights are saved
+        """
+        saver = tf.train.Saver()
+        save_path = saver.save(self.sess, name+".ckpt")
+        print("Model saved in path: %s" % save_path)
+
+    def load(self, name):
+        """
+        Load the weights of the 2 networks saved in the file into :ivar network
+        :param name: name of the file containing the weights to load
+        """
+        saver = tf.train.Saver()
+        saver.restore(self.sess, name+".ckpt")

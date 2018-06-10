@@ -1,3 +1,6 @@
+#import sys
+
+#sys.path.append("../../../../../gym")
 
 import os
 import gym
@@ -10,7 +13,8 @@ class Environment:
     def __init__(self):
 
         self.env_no_frame_skip = gym.make(ENV)
-        self.env = gym.wrappers.SkipWrapper(FRAME_SKIP)(self.env_no_frame_skip)
+        #self.env = gym.wrappers.SkipWrapper(FRAME_SKIP)(self.env_no_frame_skip)
+        self.env = self.env_no_frame_skip
         self.render = False
         self.images = []
 

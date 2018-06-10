@@ -116,6 +116,10 @@ class Simulator:
             elif RWH < IMIN:
                 saturationMin = True
             else:
+                if math.isnan(RWH):
+                    print("Aqui hay un problema")
+                    print("hdg es: ",self.hdg[jj])
+                    print("delta_hdg is : ",delta_hdg)
                 self.vmg[jj] = self.hyst.calculateSpeed(RWH) * math.cos(self.hdg_target - self.hdg[jj])
 
         if saturationMin == True:

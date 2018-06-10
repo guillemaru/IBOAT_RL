@@ -8,7 +8,7 @@ import parameters
 def save(saver, fig_name):
     for path, data in saver:
         plt.plot(data)
-    plt.show(block=False)
+    plt.savefig("Reward.png")
 
 
 class Displayer:

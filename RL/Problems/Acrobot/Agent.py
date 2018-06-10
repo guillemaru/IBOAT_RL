@@ -14,6 +14,8 @@ from ExperienceBuffer import ExperienceBuffer
 from Displayer import DISPLAYER
 import parameters
 
+import time
+
 
 class Agent:
 
@@ -25,6 +27,7 @@ class Agent:
         self.state_size = self.env.get_state_size()[0]
         self.action_size = self.env.get_action_size()
         self.low_bound, self.high_bound = self.env.get_bounds()
+
 
         self.buffer = ExperienceBuffer()
 
@@ -55,8 +58,7 @@ class Agent:
             s = self.env.reset()
             render = (ep % parameters.RENDER_FREQ == 0 and parameters.DISPLAY)
             self.env.set_render(render)
-
-            while episode_step < parameters.MAX_EPISODE_STEPS or not done:
+            while episode_step < parameters.MAX_EPISODE_STEPS: #and not done:
 
                 # choose action based on deterministic policy
                 a, = self.sess.run(self.network.actions,
@@ -67,10 +69,14 @@ class Agent:
                 noise_process = parameters.EXPLO_THETA * \
                     (parameters.EXPLO_MU - noise_process) + \
                     parameters.EXPLO_SIGMA * np.random.randn(self.action_size)
-
+                #print("a before noise: ", a)
                 a += noise_scale * noise_process
-
+                #print("a after noise: ",a)
+                a = np.clip(a, self.low_bound, self.high_bound)
+                #print("a after clip is: ",a)
                 s_, r, done, info = self.env.act(a)
+                if done:
+                    print("done at step: ",episode_step)
                 episode_reward += r
 
                 self.buffer.add((s, a, r, s_, 0.0 if done else 1.0))
@@ -95,14 +101,17 @@ class Agent:
                 s = s_
                 episode_step += 1
                 self.total_steps += 1
-
             if ep % parameters.DISP_EP_REWARD_FREQ == 0:
-                print('Episode %2i, Reward: %7.3f, Steps: %2i, Final noise scale: %7.3f' %
+                print('Episode %i, Reward: %7.3f, Steps: %i, Final noise scale: %7.3f' %
                       (ep, episode_reward, episode_step, noise_scale))
             DISPLAYER.add_reward(episode_reward)
+            # We save CNN weights every 1000 epochs
+            if ep % 1000 == 0 and ep != 0:
+                self.save("NetworkParam/"+ str(ep) +"_epochs")
 
 
     def play(self, number_run):
+        self.load("NetworkParam/FinalParam")
         print("Playing for", number_run, "runs")
 
         self.env.set_render(True)
@@ -112,15 +121,17 @@ class Agent:
                 s = self.env.reset()
                 episode_reward = 0
                 done = False
-
-                while not done:
+                counter=0
+                while counter<100: #not done:
 
                     a, = self.sess.run(self.network.actions,
                                        feed_dict={self.network.state_ph: s[None]})
-
+                    #print("The action taken is: ",a)
                     s, r, done, info = self.env.act(a)
                     episode_reward += r
-                
+                    counter+=1
+                    time.sleep(0.07)
+                    
                 print("Episode reward :", episode_reward)
 
         except KeyboardInterrupt as e:
@@ -136,3 +147,20 @@ class Agent:
 
     def close(self):
         self.env.close()
+
+    def save(self, name):
+        """
+        Save the weights of both of the networks into a .ckpt tensorflow session file
+        :param name: Name of the file where the weights are saved
+        """
+        saver = tf.train.Saver()
+        save_path = saver.save(self.sess, name+".ckpt")
+        print("Model saved in path: %s" % save_path)
+
+    def load(self, name):
+        """
+        Load the weights of the 2 networks saved in the file into :ivar network
+        :param name: name of the file containing the weights to load
+        """
+        saver = tf.train.Saver()
+        saver.restore(self.sess, name+".ckpt")

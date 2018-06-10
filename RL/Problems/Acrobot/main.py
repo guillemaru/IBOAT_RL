@@ -16,12 +16,14 @@ if __name__ == '__main__':
         agent = Agent(sess)
 
         print("Beginning of the run")
+        '''
         try:
             agent.run()
         except KeyboardInterrupt:
-            pass
+            agent.save("NetworkParam/FinalParam")
         print("End of the run")
         DISPLAYER.disp()
+        '''
 
         agent.play(5)
 
