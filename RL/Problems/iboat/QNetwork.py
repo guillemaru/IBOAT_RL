@@ -64,11 +64,11 @@ class Network:
 
         # isolate vars for each network
         self.actor_vars = tf.get_collection(
-            tf.GraphKeys.GLOBAL_VARIABLES, scope='actor')
+            tf.GraphKeys.TRAINABLE_VARIABLES, scope='actor')
         self.slow_target_actor_vars = tf.get_collection(
             tf.GraphKeys.GLOBAL_VARIABLES, scope='slow_target_actor')
         self.critic_vars = tf.get_collection(
-            tf.GraphKeys.GLOBAL_VARIABLES, scope='critic')
+            tf.GraphKeys.TRAINABLE_VARIABLES, scope='critic')
         self.slow_target_critic_vars = tf.get_collection(
             tf.GraphKeys.GLOBAL_VARIABLES, scope='slow_target_critic')
 
@@ -200,19 +200,19 @@ class Network:
         merge_flat = tf.contrib.layers.flatten(merge) #shape [?,80]
 
         hidden1 = tf.layers.dense(inputs=merge_flat, units=256, activation=tf.nn.leaky_relu,trainable=trainable,name='dense1', reuse = reuse) #shape [?,256]
-        hidden1BN = tf.layers.batch_normalization(hidden1,center=True, scale=True)
+        #hidden1BN = tf.layers.batch_normalization(hidden1,center=True, scale=True)
 
-        hidden2 = tf.layers.dense(hidden1BN, 32,
+        hidden2 = tf.layers.dense(hidden1, 32,
                                  trainable=trainable, reuse=reuse,
                                  activation=tf.nn.leaky_relu, name='dense2')
-        hidden2BN = tf.layers.batch_normalization(hidden2,center=True, scale=True)
-
-        hidden3 = tf.layers.dense(hidden2BN, 16,
+        #hidden2BN = tf.layers.batch_normalization(hidden2,center=True, scale=True)
+        
+        hidden3 = tf.layers.dense(hidden2, 16,
                                    trainable=trainable, reuse=reuse,
                                    activation=tf.nn.leaky_relu, name='dense3')
-        hidden3BN = tf.layers.batch_normalization(hidden3,center=True, scale=True)
-
-        actions_unscaled = tf.layers.dense(hidden3BN, self.action_size,
+        #hidden3BN = tf.layers.batch_normalization(hidden3,center=True, scale=True)
+        
+        actions_unscaled = tf.layers.dense(hidden3, self.action_size,
                                            trainable=trainable, reuse=reuse,
                                            name='dense_3')
         
@@ -284,22 +284,19 @@ class Network:
         merge_with_action = tf.concat([merge_flat,action_reshape],axis=1)
 
         hidden1 = tf.layers.dense(inputs=merge_with_action, units=256, activation=tf.nn.leaky_relu,trainable=trainable,name='hidden1', reuse = reuse) #shape [?,256]
-        hidden1BN = tf.layers.batch_normalization(hidden1,center=True, scale=True)
-        
-        #merge_with_action = tf.concat([tf.expand_dims(dense_statesBN,axis=2), actions], axis=1) #shape [?,257,1]
-        #merge_with_action = tf.reshape(merge_with_action,[-1,257])
+        #hidden1BN = tf.layers.batch_normalization(hidden1,center=True, scale=True)
 
-        hidden2 = tf.layers.dense(hidden1BN, 32,
+        hidden2 = tf.layers.dense(hidden1, 32,
                                  trainable=trainable, reuse=reuse,
                                  activation=tf.nn.leaky_relu, name='hidden2')
-        hidden2BN = tf.layers.batch_normalization(hidden2,center=True, scale=True)
-
-        hidden3 = tf.layers.dense(hidden2BN, 16,
+        #hidden2BN = tf.layers.batch_normalization(hidden2,center=True, scale=True)
+        
+        hidden3 = tf.layers.dense(hidden2, 16,
                                    trainable=trainable, reuse=reuse,
                                    activation=tf.nn.leaky_relu, name='hidden3')
-        hidden3BN = tf.layers.batch_normalization(hidden3,center=True, scale=True)
-
-        q_values = tf.layers.dense(hidden3BN, 1,
+        #hidden3BN = tf.layers.batch_normalization(hidden3,center=True, scale=True)
+        
+        q_values = tf.layers.dense(hidden3, 1,
                                    trainable=trainable, reuse=reuse,
                                    name='dense3')
         

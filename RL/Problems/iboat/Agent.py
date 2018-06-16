@@ -2,17 +2,14 @@
 import tensorflow as tf
 import numpy as np
 
-#import gym
-#from gym import wrappers
-import random
+from random import *
+#import random
 import math
 
 from QNetwork import Network
-
 from Environment import Environment
 #from EnvironmentRealistic import Environment
 from ExperienceBuffer import ExperienceBuffer
-
 from Displayer import DISPLAYER
 import parameters
 
@@ -45,14 +42,15 @@ class Agent:
         DISPLAYER.reset()
 
     def run(self):
+        #self.load("NetworkParam_NoBatchNorm_TRAINABLE/FinalParam")
         self.total_steps = 0
 
-        hdg0_rand_vec=(0,2,4,6,8,10,13,15)
+        #hdg0_rand_vec=(0,2,4,6,8,10,13,15)
         '''
         WIND CONDITIONS
         '''
         mean = 45 * TORAD
-        std = 0 * TORAD
+        std = 1 * TORAD
         wind_samples = 10
         w = wind(mean=mean, std=std, samples = wind_samples)
         WH = w.generateWind()
@@ -61,7 +59,6 @@ class Agent:
 
             episode_reward = 0
             episode_step = 0
-            #done = False
 
             # Initialize exploration noise process
             noise_process = np.zeros(self.action_size)
@@ -70,16 +67,11 @@ class Agent:
                 (self.high_bound - self.low_bound)
 
             # Initial state
+            w = wind(mean=uniform(40/TORAD,45/TORAD), std=std, samples = wind_samples)
             WH = w.generateWind()
-            hdg0_rand = random.sample(hdg0_rand_vec, 1)[0]
+            hdg0_rand = uniform(0,15) #random.sample(hdg0_rand_vec, 1)[0]
             hdg0 = hdg0_rand * TORAD * np.ones(10)
             s = self.env.reset(hdg0,WH)
-            #print("el heading inicial del episodio es: ",hdg0_rand)
-            #print("la primera indicencia es: ",s[0][-1]/TORAD)
-
-
-            #render = (ep % parameters.RENDER_FREQ == 0 and parameters.DISPLAY)
-            #self.env.set_render(render)
 
             while episode_step < parameters.MAX_EPISODE_STEPS: #and not done:
 
@@ -99,15 +91,16 @@ class Agent:
                 noise_process = parameters.EXPLO_THETA * \
                     (parameters.EXPLO_MU - noise_process) + \
                     parameters.EXPLO_SIGMA * np.random.randn(self.action_size)
+                #if episode_step % parameters.CHECKING_ACTION_FREQUENCY == 0:
+                #    print("a before noise is: ",a)
                 a += noise_scale * noise_process
                 #to respect the bounds:
                 a = np.clip(a, self.low_bound, self.high_bound)
+                #if episode_step % parameters.CHECKING_ACTION_FREQUENCY == 0:
+                #    print("a after noise is: ",a)
 
                 s_, r  = self.env.act(a,WH) #, done, info
                 episode_reward += r
-
-                #if a==3 or a==-3:
-                #    a=[a]
 
                 self.buffer.add((s, np.reshape(a, [1,1] ), r, np.reshape(s_, [self.state_size,1]), 0.0 if episode_step<parameters.MAX_EPISODE_STEPS-1 else 1.0)) #, 0.0 if done else 1.0
 
@@ -137,8 +130,9 @@ class Agent:
                       (ep, hdg0[0]*(1/TORAD), episode_reward, noise_scale,critic_loss))
             DISPLAYER.add_reward(episode_reward)
             # We save CNN weights every 1000 epochs
-            if ep % 1000 == 0 and ep != 0:
+            if ep % 500 == 0 and ep != 0:
                 self.save("NetworkParam/"+ str(ep) +"_epochs")
+        self.save("NetworkParam/"+"FinalParam")
 
 
     def playActor(self):
@@ -166,7 +160,7 @@ class Agent:
                 episode_step=0
                 v_episode=[]
                 i_episode=[]
-                while episode_step < parameters.MAX_EPISODE_STEPS*3: #not done:
+                while episode_step < 210: #not done:
                     i_episode.append(s[0][-1]/TORAD)
                     #if episode_step==1:
                         #print("el estado en el segundo step es: ",s)
@@ -220,7 +214,7 @@ class Agent:
                 episode_step=0
                 v_episode=[]
                 i_episode=[]
-                while episode_step < parameters.MAX_EPISODE_STEPS*3: #not done:
+                while episode_step < 210: #not done:
                     i_episode.append(s[0][-1]/TORAD)
                     
                     # Critic policy
@@ -272,12 +266,7 @@ class Agent:
             print("Exception :", e)
 
         finally:
-            #self.env.set_render(False)
             print("End of the demo")
-            #self.env.close()
-
-    #def close(self):
-    #    self.env.close()
 
     def save(self, name):
         """

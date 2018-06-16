@@ -4,8 +4,8 @@ sys.path.append("../../../sim/")
 
 import os
 
-import gym
-from gym import wrappers
+#import gym
+#from gym import wrappers
 
 #from parameters import ENV, FRAME_SKIP
 from mdp import ContinuousMDP

@@ -10,29 +10,29 @@ DISCOUNT = 0.99
 FRAME_SKIP = 0
 
 
-ACTOR_LEARNING_RATE = 5e-4
-CRITIC_LEARNING_RATE = 5e-4
+ACTOR_LEARNING_RATE = 1e-4
+CRITIC_LEARNING_RATE = 1e-4
 
 # Memory size
 BUFFER_SIZE = 100000
-BATCH_SIZE = 64
+BATCH_SIZE = 16
 
 # Number of episodes of game environment to train with
-TRAINING_STEPS = 4000
+TRAINING_STEPS = 1000
 
 # Maximal number of steps during one episode
-MAX_EPISODE_STEPS = 70
+MAX_EPISODE_STEPS = 30
 TRAINING_FREQ = 1
 
 # Rate to update target network toward primary network
-UPDATE_TARGET_RATE = 0.005
+UPDATE_TARGET_RATE = 0.001
 
 # scale of the exploration noise process (1.0 is the range of each action
 # dimension)
-NOISE_SCALE_INIT = 0.75
+NOISE_SCALE_INIT = 6
 
 # decay rate (per episode) of the scale of the exploration noise process
-NOISE_DECAY = 0.995
+NOISE_DECAY = 0.993
 
 # parameters for the exploration noise process:
 # dXt = theta*(mu-Xt)*dt + sigma*dWt
@@ -44,3 +44,4 @@ EXPLO_SIGMA = 0.3
 DISP_EP_REWARD_FREQ = 20
 PLOT_FREQ = 100
 RENDER_FREQ = 100
+CHECKING_ACTION_FREQUENCY = 20
