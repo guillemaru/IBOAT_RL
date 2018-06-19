@@ -1,4 +1,3 @@
-
 import tensorflow as tf
 
 from DDPGModel import *
@@ -8,7 +7,6 @@ class Network:
     """
     Class to define actor and critic CNN features in a tensorflow model.
     It uses key functions in file DDPGModel
-
     :param int state_size: length of the state input (for convolutionnal layers).
     :param int action_size:  number of continuous action output by the network.
     :param float low_bound: minimum value for rudder action.

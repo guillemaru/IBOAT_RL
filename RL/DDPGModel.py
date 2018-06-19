@@ -1,16 +1,13 @@
-
 import tensorflow as tf
 
 def build_actor(states, bounds, action_size, trainable, scope, reuse):
     """
     Builds actor CNN in the current tensorflow model under given scope name
-
     :param states: batch of states for learning or prediction
     :param bounds: list of minimum and maximum values of continuous action
     :param action_size: size of continuous action
     :param trainable: boolean that permits to fit neural network in the associated scope if value is True
     :param scope: builds an actor network under a given scope name, to be reused under this name
-
     :return: actions chosen by the actor network for each state of the batch
     """
     with tf.variable_scope(scope):
@@ -48,7 +45,7 @@ def build_actor(states, bounds, action_size, trainable, scope, reuse):
         hidden_i_v = tf.layers.dense(merge_flat, 80, trainable=trainable,
                                    activation=tf.nn.relu, name='dense_i_v', reuse = reuse)
 
-        # hidden_i_v = tf.layers.batch_normalization(hidden_i_v, trainable = trainable, name = 'bnorm1')
+        #hidden_i_v = tf.layers.batch_normalization(hidden_i_v, trainable = trainable, name = 'bnorm1')
 
         hidden_i_v_2 = tf.layers.dense(hidden_i_v, 40, trainable=trainable,
                                    activation=tf.nn.relu, name='dense_i_v_2', reuse = reuse)
@@ -69,13 +66,11 @@ def build_actor(states, bounds, action_size, trainable, scope, reuse):
 def build_critic(states, actions, trainable, reuse, scope):
     """
     Builds actor CNN in the current tensorflow model under given scope name
-
     :param states: batch of states for learning or prediction of Q-value
     :param action: batch of actions for learning or prediction of Q-value
     :param trainable: boolean that permits to fit neural network in the associated scope if value is True
     :param reuse: boolean that determines if the networks has to be built or reused when build_critic function is called
     :param scope: builds an actor network under a given scope name, to be reused under this name
-
     :return: q_values for each state-action pair of the given batch
     """
     with tf.variable_scope(scope):

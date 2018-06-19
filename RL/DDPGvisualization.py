@@ -33,7 +33,6 @@ class DDPGVisualization:
         :param hdg0: initial heading of the simulation.
         :param src_file: source file containing the weights of the model used for the simulation. It will load a tensorflow session
         :param sim_time: duration of the simulation.
-
         '''
 
     def __init__(self, hist_duration, mdp_step, time_step, action_size, lower_bound, upper_bound, mean, std, hdg0,
