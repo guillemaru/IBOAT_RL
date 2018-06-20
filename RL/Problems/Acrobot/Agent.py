@@ -3,7 +3,7 @@ import tensorflow as tf
 import numpy as np
 
 import gym
-from gym import wrappers
+#from gym import wrappers
 import random
 
 from QNetwork import Network

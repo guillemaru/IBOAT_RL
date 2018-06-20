@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
         print("Beginning of the run")
         try:
-            #print("No hago el runn")
+            #print("I do not do the run")
             agent.run()
         except KeyboardInterrupt:
             agent.save("NetworkParam/FinalParam")

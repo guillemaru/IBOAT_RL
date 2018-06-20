@@ -3,7 +3,6 @@ import tensorflow as tf
 import numpy as np
 
 from random import *
-#import random
 import math
 
 from QNetwork import Network
@@ -42,15 +41,15 @@ class Agent:
         DISPLAYER.reset()
 
     def run(self):
-        #self.load("NetworkParam_NoBatchNorm_TRAINABLE/FinalParam")
+        #self.load("NetworkParam/FinalParam")
         self.total_steps = 0
 
-        #hdg0_rand_vec=(0,2,4,6,8,10,13,15)
+        hdg0_rand_vec=(10,13,15)
         '''
         WIND CONDITIONS
         '''
         mean = 45 * TORAD
-        std = 1 * TORAD
+        std = 0 * TORAD
         wind_samples = 10
         w = wind(mean=mean, std=std, samples = wind_samples)
         WH = w.generateWind()
@@ -67,9 +66,9 @@ class Agent:
                 (self.high_bound - self.low_bound)
 
             # Initial state
-            w = wind(mean=uniform(40/TORAD,45/TORAD), std=std, samples = wind_samples)
+            w = wind(mean=mean, std=std, samples = wind_samples)
             WH = w.generateWind()
-            hdg0_rand = uniform(0,15) #random.sample(hdg0_rand_vec, 1)[0]
+            hdg0_rand = uniform(10,15) #random.sample(hdg0_rand_vec, 1)[0]
             hdg0 = hdg0_rand * TORAD * np.ones(10)
             s = self.env.reset(hdg0,WH)
 
@@ -81,24 +80,16 @@ class Agent:
                 s = np.reshape([s[0,:], s[1,:]], [self.state_size,1])
                 a, = self.sess.run(self.network.actions,
                                    feed_dict={self.network.state_ph: s[None]})
-                #if math.isnan(a):
-                #    print("Estoy en agent, aqui hay un problema")
-                #    print("Antes de meterle noise, a es NaN")
-                #    a=1
 
                 # add temporally-correlated exploration noise to action
                 # (using an Ornstein-Uhlenbeck process)
                 noise_process = parameters.EXPLO_THETA * \
                     (parameters.EXPLO_MU - noise_process) + \
                     parameters.EXPLO_SIGMA * np.random.randn(self.action_size)
-                #if episode_step % parameters.CHECKING_ACTION_FREQUENCY == 0:
-                #    print("a before noise is: ",a)
                 a += noise_scale * noise_process
                 #to respect the bounds:
                 a = np.clip(a, self.low_bound, self.high_bound)
-                #if episode_step % parameters.CHECKING_ACTION_FREQUENCY == 0:
-                #    print("a after noise is: ",a)
-
+                
                 s_, r  = self.env.act(a,WH) #, done, info
                 episode_reward += r
 
@@ -124,19 +115,18 @@ class Agent:
                 s = s_
                 episode_step += 1
                 self.total_steps += 1
-            #print("The last action of episode is: ",a)
             if ep % parameters.DISP_EP_REWARD_FREQ == 0:
                 print('Episode %2i, initial heading: %7.3f, Reward: %7.3f, Final noise scale: %7.3f, critic loss: %7.3f' %
                       (ep, hdg0[0]*(1/TORAD), episode_reward, noise_scale,critic_loss))
             DISPLAYER.add_reward(episode_reward)
-            # We save CNN weights every 1000 epochs
+            # We save CNN weights every 500 epochs
             if ep % 500 == 0 and ep != 0:
                 self.save("NetworkParam/"+ str(ep) +"_epochs")
         self.save("NetworkParam/"+"FinalParam")
 
 
     def playActor(self):
-        self.load("NetworkParam/FinalParam")
+        #self.load("NetworkParam_NoBatchNorm_TRAINABLE/FinalParam")
 
         hdg0_rand_vec=[0,7,13]
         '''
@@ -153,29 +143,22 @@ class Agent:
                 WH = w.generateWind()
                 hdg0_rand = hdg0_rand_vec[i]
                 hdg0 = hdg0_rand * TORAD * np.ones(10)
-                #print("El parametro que envio al reset es: ",hdg0[0])
                 s = self.env.reset(hdg0,WH)
-                #print("el estado despues del reset es: ",s)
                 episode_reward = 0
                 episode_step=0
                 v_episode=[]
                 i_episode=[]
                 while episode_step < 210: #not done:
                     i_episode.append(s[0][-1]/TORAD)
-                    #if episode_step==1:
-                        #print("el estado en el segundo step es: ",s)
                     s = np.reshape([s[0,:], s[1,:]], [self.state_size,1])
 
                     a, = self.sess.run(self.network.actions,
                                        feed_dict={self.network.state_ph: s[None]})
-                    #if episode_step==0:
-                    #    print("la primera accion del episodio: ",a)
                     s_, r   = self.env.act(a,WH)
                     episode_reward += r
                     v_episode.append(r)
                     episode_step += 1
                     s = s_
-                #print("las indicencias del episodio son: ",i_episode)
                 DISPLAYER.displayVI(v_episode,i_episode,i)
                 print("Episode reward :", episode_reward," for incidence: ",hdg0_rand)
 
@@ -186,9 +169,7 @@ class Agent:
             print("Exception :", e)
 
         finally:
-            #self.env.set_render(False)
             print("End of the demo")
-            #self.env.close()
 
     def playCritic(self):
         self.load("NetworkParam/FinalParam")
@@ -209,7 +190,7 @@ class Agent:
                 hdg0_rand = hdg0_rand_vec[i]
                 hdg0 = hdg0_rand * TORAD * np.ones(10)
                 s = self.env.reset(hdg0,WH)
-                #print("el estado despues del reset es: ",s)
+                
                 episode_reward = 0
                 episode_step=0
                 v_episode=[]
@@ -255,7 +236,6 @@ class Agent:
                     v_episode.append(r)
                     episode_step += 1
                     s = s_
-                #print("las indicencias del episodio son: ",i_episode)
                 DISPLAYER.displayVI(v_episode,i_episode,i+3)
                 print("Episode reward :", episode_reward," for incidence: ",hdg0_rand)
 
