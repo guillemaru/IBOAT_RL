@@ -4,7 +4,7 @@
 
 import os
 import gym
-from gym import wrappers
+#from gym import wrappers
 from parameters import ENV, FRAME_SKIP
 
 

@@ -82,16 +82,6 @@ class Network:
             update_slow_target_ops.append(update_slow_target_actor_op)
 
         for i, slow_target_var in enumerate(self.slow_target_critic_vars):
-            '''
-            print()
-            print("Estoy en el update target")
-            print("i es : ",i)
-            print("shape de critic vars es: ",self.critic_vars[i].shape)
-            print("name de critic vars es: ",self.critic_vars[i].name)
-            print("shape de slow target critic vars es: ",slow_target_var.shape)
-            print("name de slow target critic vars es: ",slow_target_var.name)
-            print()
-            '''
             update_slow_target_critic_op = slow_target_var.assign(
                 parameters.UPDATE_TARGET_RATE * self.critic_vars[i] +
                 (1 - parameters.UPDATE_TARGET_RATE) * slow_target_var)
@@ -145,41 +135,7 @@ class Network:
 
     # Actor definition :
     def generate_actor_network(self, states, trainable, reuse):
-        '''
         
-        conv1 = tf.layers.conv1d( states, filters = 50,kernel_size = 50, strides = 5, padding = "same", trainable=trainable,
-                                 activation=tf.nn.leaky_relu, name='conv1', reuse = reuse)
-        pool1 = tf.layers.max_pooling1d(conv1,pool_size = 2, strides = 2)
-
-        conv2 = tf.layers.conv1d(pool1, filters=60, kernel_size=20, strides = 2,trainable=trainable, padding = "same",
-                                    activation=tf.nn.leaky_relu, name='conv2', reuse = reuse)
-        pool2 = tf.layers.max_pooling1d(conv2,pool_size = 2, strides = 2)
-
-        conv3 = tf.layers.conv1d(pool2, filters=60, kernel_size=10, strides = 1,trainable=trainable, padding = "same",
-                                    activation=tf.nn.leaky_relu, name='conv3', reuse = reuse)
-        pool3 = tf.layers.max_pooling1d(conv3,pool_size = 2, strides = 2)
-
-        flat = tf.contrib.layers.flatten(pool3)
-
-        hidden = tf.layers.dense(flat, 128,
-                                 trainable=trainable, reuse=reuse,
-                                 activation=tf.nn.relu, name='dense')
-        hidden2 = tf.layers.batch_normalization(hidden,center=True, scale=True,axis=-1,training=trainable,trainable=trainable)
-
-        hidden_2 = tf.layers.dense(hidden2, 16,
-                                   trainable=trainable, reuse=reuse,
-                                   activation=tf.nn.relu, name='dense_1')
-        hidden3 = tf.layers.batch_normalization(hidden_2,center=True, scale=True,axis=-1,training=trainable,trainable=trainable)
-
-        hidden_3 = tf.layers.dense(hidden3, 8,
-                                   trainable=trainable, reuse=reuse,
-                                   activation=tf.nn.relu, name='dense_2')
-        hidden4 = tf.layers.batch_normalization(hidden_3,center=True, scale=True,axis=-1,training=trainable,trainable=trainable)
-
-        actions_unscaled = tf.layers.dense(hidden4, self.action_size,
-                                           trainable=trainable, reuse=reuse,
-                                           name='dense_3')
-        '''
         conv1i = tf.layers.conv1d(states[:,0:60,:], filters = 50,kernel_size = 50, strides = 5, padding = "same", trainable=trainable,
                                  activation=tf.nn.leaky_relu, name='conv1i', reuse = reuse)
         pool1i = tf.layers.max_pooling1d(conv1i,pool_size = 2, strides = 2)
@@ -224,43 +180,7 @@ class Network:
 
     # Critic definition :
     def generate_critic_network(self, states, actions, trainable, reuse):
-        '''
-        
-        state_action = tf.concat([states, actions], axis=1)
-
-        conv1 = tf.layers.conv1d(state_action, filters = 50,kernel_size = 50, strides = 5, padding = "same", trainable=trainable,
-                                 activation=tf.nn.leaky_relu, name='conv1', reuse = reuse)
-        pool1 = tf.layers.max_pooling1d(conv1,pool_size = 2, strides = 2)
-
-        conv2 = tf.layers.conv1d(pool1, filters=60, kernel_size=20, strides = 2,trainable=trainable, padding = "same",
-                                    activation=tf.nn.leaky_relu, name='conv2', reuse = reuse)
-        pool2 = tf.layers.max_pooling1d(conv2,pool_size = 2, strides = 2)
-
-        conv3 = tf.layers.conv1d(pool2, filters=60, kernel_size=10, strides = 1,trainable=trainable, padding = "same",
-                                    activation=tf.nn.leaky_relu, name='conv3', reuse = reuse)
-        pool3 = tf.layers.max_pooling1d(conv3,pool_size = 2, strides = 2)
-
-        flat = tf.contrib.layers.flatten(pool3)
-
-        hidden = tf.layers.dense(flat, 128,
-                                 trainable=trainable, reuse=reuse,
-                                 activation=tf.nn.leaky_relu, name='dense')
-        hidden2 = tf.layers.batch_normalization(hidden,center=True, scale=True)
-
-        hidden_2 = tf.layers.dense(hidden2, 16,
-                                   trainable=trainable, reuse=reuse,
-                                   activation=tf.nn.leaky_relu, name='dense_1')
-        hidden3 = tf.layers.batch_normalization(hidden_2,center=True, scale=True)
-
-        hidden_3 = tf.layers.dense(hidden3, 8,
-                                   trainable=trainable, reuse=reuse,
-                                   activation=tf.nn.leaky_relu, name='dense_2')
-        hidden4 = tf.layers.batch_normalization(hidden_3,center=True, scale=True)
-
-        q_values = tf.layers.dense(hidden4, 1,
-                                   trainable=trainable, reuse=reuse,
-                                   name='dense_3')
-        '''
+    
 
         conv1i = tf.layers.conv1d(states[:,0:60,:], filters = 50,kernel_size = 50, strides = 5, padding = "same", trainable=trainable,
                                  activation=tf.nn.leaky_relu, name='conv1i', reuse = reuse)
@@ -284,11 +204,13 @@ class Network:
         merge_with_action = tf.concat([merge_flat,action_reshape],axis=1)
 
         hidden1 = tf.layers.dense(inputs=merge_with_action, units=256, activation=tf.nn.leaky_relu,trainable=trainable,name='hidden1', reuse = reuse) #shape [?,256]
+        #hidden1 = tf.layers.dropout(inputs=hidden1, rate=0.5, training=trainable, name = 'dropout1')
         #hidden1BN = tf.layers.batch_normalization(hidden1,center=True, scale=True)
 
         hidden2 = tf.layers.dense(hidden1, 32,
                                  trainable=trainable, reuse=reuse,
                                  activation=tf.nn.leaky_relu, name='hidden2')
+        #hidden2 = tf.layers.dropout(inputs=hidden2, rate=0.5, training=trainable, name = 'dropout2')
         #hidden2BN = tf.layers.batch_normalization(hidden2,center=True, scale=True)
         
         hidden3 = tf.layers.dense(hidden2, 16,

@@ -1,6 +1,4 @@
 
-ENV = "Pendulum-v0"
-
 LOAD = False
 DISPLAY = True
 
@@ -10,18 +8,18 @@ DISCOUNT = 0.99
 FRAME_SKIP = 0
 
 
-ACTOR_LEARNING_RATE = 1e-4
-CRITIC_LEARNING_RATE = 1e-4
+ACTOR_LEARNING_RATE = 5e-4
+CRITIC_LEARNING_RATE = 5e-4
 
 # Memory size
 BUFFER_SIZE = 100000
-BATCH_SIZE = 16
+BATCH_SIZE = 64
 
 # Number of episodes of game environment to train with
-TRAINING_STEPS = 1000
+TRAINING_STEPS = 300
 
 # Maximal number of steps during one episode
-MAX_EPISODE_STEPS = 30
+MAX_EPISODE_STEPS = 100
 TRAINING_FREQ = 1
 
 # Rate to update target network toward primary network
@@ -29,10 +27,10 @@ UPDATE_TARGET_RATE = 0.001
 
 # scale of the exploration noise process (1.0 is the range of each action
 # dimension)
-NOISE_SCALE_INIT = 6
+NOISE_SCALE_INIT = 10
 
 # decay rate (per episode) of the scale of the exploration noise process
-NOISE_DECAY = 0.993
+NOISE_DECAY = 0.995
 
 # parameters for the exploration noise process:
 # dXt = theta*(mu-Xt)*dt + sigma*dWt
