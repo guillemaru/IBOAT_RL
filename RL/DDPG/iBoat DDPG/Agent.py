@@ -126,7 +126,7 @@ class Agent:
 
 
     def playActor(self):
-        #self.load("NetworkParam_NoBatchNorm_TRAINABLE/FinalParam")
+        self.load("NetworkParam/FinalParam")
 
         hdg0_rand_vec=[0,7,13]
         '''
