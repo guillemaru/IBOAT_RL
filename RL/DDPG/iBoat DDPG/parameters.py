@@ -13,17 +13,17 @@ CRITIC_LEARNING_RATE = 5e-4
 
 # Memory size
 BUFFER_SIZE = 100000
-BATCH_SIZE = 64
+BATCH_SIZE = 32
 
 # Number of episodes of game environment to train with
 TRAINING_STEPS = 300
 
 # Maximal number of steps during one episode
-MAX_EPISODE_STEPS = 100
+MAX_EPISODE_STEPS = 50
 TRAINING_FREQ = 1
 
 # Rate to update target network toward primary network
-UPDATE_TARGET_RATE = 0.001
+UPDATE_TARGET_RATE = 0.01
 
 # scale of the exploration noise process (1.0 is the range of each action
 # dimension)
