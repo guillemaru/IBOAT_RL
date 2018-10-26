@@ -21,12 +21,12 @@ class Environment:
         self.offset = 0
         self.images = []
         '''
-        self.history_duration = 6  # Duration of state history [s]
+        self.history_duration = 3  # Duration of state history [s]
         self.mdp_step = 1  # Step between each state transition [s]
         self.time_step = 0.1  # time step [s] <-> 10Hz frequency of data acquisition
-        self.low_bound = -3.0
-        self.high_bound = 3.0
-        self.action_size = 1
+        self.low_bound = -15.0
+        self.high_bound = 10.0
+        self.action_size = 2 #number of actions possible
         self.mdp = ContinuousMDP(self.history_duration, self.mdp_step, self.time_step,self.low_bound,self.high_bound)
 
     def get_state_size(self):
@@ -47,7 +47,7 @@ class Environment:
         return s
         #return self.env.reset()
 
-    def act(self, action, gif=False):
+    def act(self, action,WH, gif=False):
         '''
         if gif:
             return self._act_gif(action)
@@ -57,7 +57,7 @@ class Environment:
         next_state, reward = self.mdp.transition(action, WH) 
         return next_state, reward 
 
-    def _act(self, action):
+    def _act(self, action, WH):
         '''
         if self.render:
             self.env.render()

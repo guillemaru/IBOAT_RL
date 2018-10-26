@@ -52,8 +52,9 @@ if __name__ == '__main__':
         finally:
             print("End of the training")
 
+        
         DISPLAYER.disp_all()
         DISPLAYER.disp_one()
         DISPLAYER.disp_seq()
-        master_agent.play(sess, 10)
-        master_agent.play(sess, 1, "results/gif/{}_1.gif".format(settings.ENV))
+        master_agent.play(sess, 3)
+        #master_agent.play(sess, 1, "results/gif/{}_1.gif".format(settings.ENV))

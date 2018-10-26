@@ -34,23 +34,39 @@ class NetworkArchitecture:
         self.inputs = tf.placeholder(tf.float32, [None,2*self.state_size,1],
                                      name='Input_state')
 
-        with tf.variable_scope('Convolutional_Layers'):
-            self.conv1 = tf.layers.conv1d(inputs=self.inputs,
-                                          filters=32,
-                                          kernel_size=8,
+        with tf.variable_scope('Convolutional_Layers_I'):
+            self.conv1i = tf.layers.conv1d(inputs=self.inputs[:,0:self.state_size,:],
+                                          filters=50,
+                                          kernel_size=20,
                                           strides=4,
-                                          padding='valid',
+                                          padding='same',
                                           activation=tf.nn.relu)
-            self.conv2 = tf.layers.conv1d(inputs=self.conv1,
-                                          filters=64,
-                                          kernel_size=4,
+            self.conv2i = tf.layers.conv1d(inputs=self.conv1i,
+                                          filters=30,
+                                          kernel_size=8,
                                           strides=2,
-                                          padding='valid',
+                                          padding='same',
+                                          activation=tf.nn.relu)
+
+        with tf.variable_scope('Convolutional_Layers_V'):
+            self.conv1v = tf.layers.conv1d(inputs=self.inputs[:,self.state_size:2*self.state_size,:],
+                                          filters=50,
+                                          kernel_size=20,
+                                          strides=4,
+                                          padding='same',
+                                          activation=tf.nn.relu)
+            self.conv2v = tf.layers.conv1d(inputs=self.conv1v,
+                                          filters=30,
+                                          kernel_size=8,
+                                          strides=2,
+                                          padding='same',
                                           activation=tf.nn.relu)
 
         # Flatten the output
-        flat_conv2 = tf.layers.flatten(self.conv2)
+        merge = tf.concat([self.conv2i,self.conv2v],axis=1)
+        flat_conv2 = tf.layers.flatten(merge)
         self.hidden = tf.layers.dense(flat_conv2, 256, activation=tf.nn.relu)
+        #self.hidden2 = tf.layers.dense(self.hidden,32,activation=tf.nn.relu)
         return self.inputs
 
     def build_lstm(self):

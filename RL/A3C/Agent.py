@@ -58,6 +58,7 @@ class Agent:
         #self.env.set_render(render)
         self.state_size = self.env.get_state_size()
         self.action_size = self.env.get_action_size()
+        self.low_bound,self.high_bound = self.env.get_bounds()
 
         self.network = Network(self.state_size, self.action_size, self.name)
         self.update_local_vars = update_target_graph('global', self.name)
@@ -111,8 +112,7 @@ class Agent:
             self.network.discounted_reward: discounted_reward,
             self.network.inputs: self.states_buffer,
             self.network.actions: self.actions_buffer,
-            self.network.advantages: advantages,
-            self.network.state_in: self.initial_lstm_state}
+            self.network.advantages: advantages}
         losses = sess.run([self.network.value_loss,
                            self.network.policy_loss,
                            self.network.entropy,
@@ -154,9 +154,12 @@ class Agent:
                     # Reset the local network to the global
                     sess.run(self.update_local_vars)
 
+                    mean = 45 * TORAD
+                    std = 0 * TORAD
+                    wind_samples = 10
                     w = wind(mean=mean, std=std, samples = wind_samples)
                     WH = w.generateWind()
-                    hdg0_rand = uniform(10,15) #random.sample(hdg0_rand_vec, 1)[0]
+                    hdg0_rand = random.uniform(6,14) 
                     hdg0 = hdg0_rand * TORAD * np.ones(10)
                     s = self.env.reset(hdg0,WH)
                     
@@ -165,41 +168,59 @@ class Agent:
                     #if self.worker_index == 1 and render and settings.DISPLAY:
                     #    self.env.set_render(True)
 
-                    self.lstm_state = self.network.lstm_state_init
-                    self.initial_lstm_state = self.lstm_state
+                    #self.lstm_state = self.network.lstm_state_init
+                    #self.initial_lstm_state = self.lstm_state
 
                     while not coord.should_stop() and not done and \
                             episode_step < settings.MAX_EPISODE_STEP:
 
+                        
+                        
+                        
                         WH = np.random.uniform(mean - std, mean + std, size=wind_samples)
+                        #print("The shape of s is: ",tf.shape(s))
                         s = np.reshape([s[0,:], s[1,:]], [2*self.state_size,1])
 
                         # Prediction of the policy and the value
-                        feed_dict = {self.network.inputs: [s],
-                                     self.network.state_in: self.lstm_state}
-                        policy, value, self.lstm_state = sess.run(
+                        feed_dict = {self.network.inputs: [s]}
+                        policy, value = sess.run(
                             [self.network.policy,
-                             self.network.value,
-                             self.network.state_out], feed_dict=feed_dict)
+                             self.network.value], feed_dict=feed_dict)
 
                         policy, value = policy[0], value[0][0]
 
+
                         if random.random() < self.epsilon:
-                            action = random.randint(0, self.action_size - 1)
-                            action = np.clip(action, self.low_bound, self.high_bound)
+                            action = random.choice([2,-2])
+                            #action = np.clip(action, self.low_bound, self.high_bound)
 
                         else:
                             # Choose an action according to the policy
-                            action = np.random.choice(self.action_size,
+                            action = np.random.choice([2,-2],
                                                       p=policy)
-                            action = np.clip(action, self.low_bound, self.high_bound)
+                            #action = np.clip(action, self.low_bound, self.high_bound)
 
-                        s_, r, done, _ = self.env.act(action)
-                        s_ = np.reshape(s_, [2*self.state_size,1])
+                        s_, v = self.env.act(action,WH)
+                        
+                        if episode_step==1:
+                            r=0
+                        else:
+                            if v<0.65:
+                                r=-0.05
+                            elif v>0.65 and v<=0.80:
+                                r=0
+                            elif v>0.80:
+                                r=100
+                                done=True
+                            else:
+                                r=0
+
+                        
+                        #s_ = np.reshape(s_, [2*self.state_size,1])
 
                         # Store the experience
                         self.states_buffer.append(s)
-                        self.actions_buffer.append(np.reshape(action, [1,1] ))
+                        self.actions_buffer.append(action) #np.reshape(action, [1,1] )
                         self.rewards_buffer.append(r)
                         self.values_buffer.append(value)
                         self.mean_values_buffer.append(value)
@@ -214,23 +235,21 @@ class Agent:
                         # then we empty the episode buffers
                         if len(self.states_buffer) == settings.MAX_LEN_BUFFER \
                                 and not done:
-
-                            feed_dict = {self.network.inputs: [s],
-                                         self.network.state_in: self.lstm_state}
+     
+                            feed_dict = {self.network.inputs: [np.reshape([s[0,:], s[1,:]], [2*self.state_size,1])]}
                             bootstrap_value = sess.run(
                                 self.network.value,
                                 feed_dict=feed_dict)
 
                             self.train(sess, bootstrap_value) #with this we change global network
                             sess.run(self.update_local_vars)
-                            self.initial_lstm_state = self.lstm_state
+                            #self.initial_lstm_state = self.lstm_state
 
                     if len(self.states_buffer) != 0:
                         if done:
                             bootstrap_value = 0
                         else:
-                            feed_dict = {self.network.inputs: [s],
-                                         self.network.state_in: self.lstm_state}
+                            feed_dict = {self.network.inputs: [np.reshape([s[0,:], s[1,:]], [2*self.state_size,1])]}
                             bootstrap_value = sess.run(
                                 self.network.value,
                                 feed_dict=feed_dict)
@@ -246,11 +265,11 @@ class Agent:
 
                     if (self.worker_index == 1 and
                             self.nb_ep % settings.DISP_EP_REWARD_FREQ == 0):
-                        print('Episode %2i, Reward: %i, Steps: %i, '
+                        print('Episode %2i, Initial hdg: %2i, Reward: %7.3f, Steps: %i, '
                               'Epsilon: %7.3f' %
-                              (self.nb_ep, episode_reward, episode_step,
+                              (self.nb_ep, hdg0_rand, episode_reward, episode_step,
                                self.epsilon))
-
+                        print("Policy: ",policy)
                     if (self.worker_index == 1 and
                             self.nb_ep % settings.SAVE_FREQ == 0):
                         self.save(self.total_steps)
@@ -267,7 +286,15 @@ class Agent:
         print("Playing", self.name, "for", number_run, "runs")
 
         with sess.as_default(), sess.graph.as_default():
-
+            hdg0_rand_vec=[0,7,13]
+            '''
+            WIND CONDITIONS
+            '''
+            mean = 45 * TORAD
+            std = 0 * TORAD
+            wind_samples = 10
+            w = wind(mean=mean, std=std, samples = wind_samples)
+            
             try:
                 for i in range(number_run):
 
@@ -275,26 +302,44 @@ class Agent:
                     if self.name != 'global':
                         sess.run(self.update_local_vars)
 
-                    s = self.env.reset()
+                    
+                    WH = w.generateWind()
+                    hdg0_rand = hdg0_rand_vec[i]
+                    hdg0 = hdg0_rand * TORAD * np.ones(10)
+                    s = self.env.reset(hdg0,WH)
                     episode_reward = 0
-
+                    episode_step=0
+                    v_episode=[]
+                    i_episode=[]
                     done = False
-                    self.lstm_state = self.network.lstm_state_init
+                    
+                    #self.lstm_state = self.network.lstm_state_init
 
-                    while not done:
+                    while (not done and episode_step<70):
+                        i_episode.append(round(s[0][-1]/TORAD))
+                        s = np.reshape([s[0,:], s[1,:]], [2*self.state_size,1])
                         # Prediction of the policy
-                        feed_dict = {self.network.inputs: [s],
-                                     self.network.state_in: self.lstm_state}
-                        policy, self.lstm_state = sess.run(
+                        feed_dict = {self.network.inputs: [s]}
+                        policy,value = sess.run(
                             [self.network.policy,
-                             self.network.state_out], feed_dict=feed_dict)
+                             self.network.value], feed_dict=feed_dict)
 
                         policy = policy[0]
 
                         # Choose an action according to the policy
-                        action = np.random.choice(self.action_size, p=policy)
-                        s, r, done, info = self.env.act(action, path != '')
+                        action = np.random.choice([1,-1], p=policy)
+                        s_, r = self.env.act(action, WH)
+                        if episode_step>12:
+                            if np.mean(v_episode[-4:])>0.8:
+                                #done=True
+                                print("Done!")
+                            else:
+                                done = False
                         episode_reward += r
+                        v_episode.append(r)
+                        episode_step += 1
+                        s=s_
+                    DISPLAYER.displayVI(v_episode,i_episode,i)
 
                     print("Episode reward :", episode_reward)
 

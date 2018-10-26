@@ -10,7 +10,8 @@ import settings
 def save(saver, fig_name):
     if settings.DISPLAY:
         for path, data in saver:
-            plt.plot(data)
+            if data != []:
+                plt.plot(data)
         fig = plt.gcf()
         os.makedirs(os.path.dirname(fig_name), exist_ok=True)
         fig.savefig(fig_name)
@@ -22,6 +23,15 @@ def save(saver, fig_name):
             data = " ".join(map(str, data))
             with open(path, "w") as file:
                 file.write(data)
+
+def plotAndSave(saver, fig_name):
+    for path, data in saver:
+        plt.plot(data)
+        plt.s
+
+        avefig(fig_name)
+    #plt.draw()
+    #plt.show()
 
 
 class Displayer:
@@ -59,6 +69,23 @@ class Displayer:
         saver = [("results/Seq_reward", self.sequential_rewards),
                  ("results/Seq_mean_reward", mean_reward)]
         save(saver, "results/Seq_reward.png")
+
+    def displayVI(self,vEpisode,iEpisode,nbPlay):
+        #f, axarr = plt.subplots(2, sharex=True)
+        #axarr[0].plot(vEpisode)
+        #axarr[1].plot(iEpisode)
+        #axarr[0].set_ylabel("v")
+        #axarr[1].set_ylabel("i")
+        #plt.plot(vEpisode)
+        #plt.savefig("results/VI"+str(nbPlay)+"V.png")
+        #plt.plot(iEpisode)
+        #plt.savefig("results/VI"+str(nbPlay)+"I.png")
+        with open(str(nbPlay)+"V.txt","w") as output:
+            output.write(str(vEpisode))
+        with open(str(nbPlay)+"I.txt","w") as output:
+            output.write(str(iEpisode))  
+
+
 
 
 DISPLAYER = Displayer()
