@@ -3,7 +3,8 @@
 import tensorflow as tf
 import numpy as np
 
-from random import *
+#from random import *
+import random
 import math
 
 from QNetwork import Network
@@ -15,8 +16,8 @@ import parameters
 
 import sys
 sys.path.append("../../../sim/")
-from Simulator import TORAD
-from mdp import ContinuousMDP
+from Simulator2 import TORAD
+from mdp2 import ContinuousMDP
 from environment import wind
 
 
@@ -42,17 +43,18 @@ class Agent:
         DISPLAYER.reset()
 
     def run(self):
-        #self.load("NetworkParam/FinalParam")
+        self.load("NetworkParam_best_ThirdSemester/FinalParam")
         self.total_steps = 0
 
         '''
         WIND CONDITIONS
         '''
         mean = 45 * TORAD
-        std = 0 * TORAD
+        std = 0.1 * TORAD
         wind_samples = 10
         w = wind(mean=mean, std=std, samples = wind_samples)
         WH = w.generateWind()
+        lista = [0,12]
 
         for ep in range(1, parameters.TRAINING_STEPS+1):
 
@@ -70,7 +72,7 @@ class Agent:
             # Initial state
             w = wind(mean=mean, std=std, samples = wind_samples)
             WH = w.generateWind()
-            hdg0_rand = uniform(6,11) #random.sample(hdg0_rand_vec, 1)[0]
+            hdg0_rand = random.uniform(10,13) #random.sample(hdg0_rand_vec, 1)[0] #random.choice(lista)
             hdg0 = hdg0_rand * TORAD * np.ones(10)
             s = self.env.reset(hdg0,WH)
             
@@ -94,14 +96,13 @@ class Agent:
                 
                 s_, v  = self.env.act(a,WH) #, done, info
                 
+                
                 if episode_step==1:
                     r=0
-                elif s[int(self.state_size/4)]>(13*TORAD) and s[int(self.state_size/4)]<(15*TORAD) and v<0.7 and a<0:
-                    r=1
-                    #print("lo he entendido!!")
-                    #print("i: ", s[int(self.state_size/4)]/TORAD)
-                    #print("a: ",a)
-                    #print("v: ",v)
+                #elif s[int(self.state_size/2-2)]>(12*TORAD) and s[int(self.state_size/2-2)]<(16*TORAD) and v>0.64 and v<0.67 and s[int(self.state_size-5)]<s[int(self.state_size-2)] and a>0:
+                #    r=0.08
+                #elif s[int(self.state_size/2-2)]>(13*TORAD) and s[int(self.state_size/2-2)]<(15*TORAD) and v>0.63 and v<0.67 and a<0:
+                #    r=0.01
                 else:
                     if v<=0.69:
                         r=0
@@ -162,12 +163,12 @@ class Agent:
     def playActor(self):
         self.load("NetworkParam/FinalParam")
 
-        hdg0_rand_vec=[0,7,13]
+        hdg0_rand_vec=[0,7,12]
         '''
         WIND CONDITIONS
         '''
         mean = 45 * TORAD
-        std = 0 * TORAD
+        std = 0.1 * TORAD
         wind_samples = 10
         w = wind(mean=mean, std=std, samples = wind_samples)
 
@@ -182,9 +183,9 @@ class Agent:
                 episode_step=0
                 v_episode=[]
                 i_episode=[]
-                while episode_step < 50: #not done:
+                while episode_step < 40: #not done:
                     if episode_step==0:
-                        i_episode.append(hdg0_rand)
+                        i_episode.append(hdg0_rand+WH[0]/TORAD-40)
                     else:
                         i_episode.append(s[0][-1]/TORAD)
                     s = np.reshape([s[0,:], s[1,:]], [self.state_size,1])
@@ -212,12 +213,12 @@ class Agent:
     def playCritic(self):
         self.load("NetworkParam/FinalParam")
 
-        hdg0_rand_vec=[0,7,13]
+        hdg0_rand_vec=[0,7,12]
         '''
         WIND CONDITIONS
         '''
         mean = 45 * TORAD
-        std = 0 * TORAD
+        std = 0.1 * TORAD
         wind_samples = 10
         w = wind(mean=mean, std=std, samples = wind_samples)
 
@@ -233,9 +234,9 @@ class Agent:
                 episode_step=0
                 v_episode=[]
                 i_episode=[]
-                while episode_step < 50: #not done:
+                while episode_step < 30: #not done:
                     if episode_step==0:
-                        i_episode.append(hdg0_rand)
+                        i_episode.append(hdg0_rand+WH[0]/TORAD-40)
                     else:
                         i_episode.append(s[0][-1]/TORAD)
                     

@@ -1,5 +1,5 @@
 import sys
-sys.path.append("../../../sim/")
+sys.path.append("../../sim/")
 import Realistic_mdp
 
 import os
@@ -28,7 +28,13 @@ class Environment:
         self.truewaterspeed = 0
         self.sailpos = 40
         self.speed0 = 0
+        self.truewindheading = 45
+        
+        self.hdg0 = 0
+        
+        
         self.mdp = Realistic_mdp.mdp_realistic(self.mdp_duration, self.history_duration, self.mdp_step, self.time_step)
+        self.state = self.mdp.initializeMDP(self.hdg0, self.sailpos, self.speed0, self.truewaterheading, self.truewaterspeed, self.truewindspeed, self.truewindheading)
     def get_state_size(self):
         #try:
         return 61 #(self.mdp.size)
@@ -48,6 +54,7 @@ class Environment:
     #    self.render = render
 
     def reset(self,hdg0,WH):
+        
         s = self.mdp.initializeMDP(hdg0[0], self.sailpos,self.speed0,self.truewaterheading, self.truewaterspeed,self.truewindspeed,WH[0])
         return s
         #return self.env.reset()

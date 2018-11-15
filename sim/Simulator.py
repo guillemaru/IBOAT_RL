@@ -105,7 +105,7 @@ class Simulator:
 
         saturationMin = False
         saturationMax =False
-
+        
         for jj in range(self.size):
             RWH = self.hdg[jj] + WH[jj] + self.sail_pos
             self.incrementDelayHdg(jj, delta_hdg)

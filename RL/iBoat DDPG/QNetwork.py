@@ -146,7 +146,7 @@ class Network:
                                     activation=tf.nn.relu, name='conv2i', reuse = reuse)
         pool2i = tf.layers.max_pooling1d(conv2i,pool_size = 2, strides = 2) #shape [?,1,40]
 
-        conv1v = tf.layers.conv1d(states[:,60:120,:], filters = 50,kernel_size = 50, strides = 5, padding = "same", trainable=trainable,
+        conv1v = tf.layers.conv1d(states[:,61:121,:], filters = 50,kernel_size = 50, strides = 5, padding = "same", trainable=trainable,
                                  activation=tf.nn.relu, name='conv1v', reuse = reuse)
         pool1v = tf.layers.max_pooling1d(conv1v,pool_size = 2, strides = 2)
 
@@ -192,7 +192,7 @@ class Network:
                                     activation=tf.nn.relu, name='conv2i', reuse = reuse)
         pool2i = tf.layers.max_pooling1d(conv2i,pool_size = 2, strides = 2) #shape [?,1,40]
 
-        conv1v = tf.layers.conv1d(states[:,60:120,:], filters = 50,kernel_size = 50, strides = 5, padding = "same", trainable=trainable,
+        conv1v = tf.layers.conv1d(states[:,61:121,:], filters = 50,kernel_size = 50, strides = 5, padding = "same", trainable=trainable,
                                  activation=tf.nn.relu, name='conv1v', reuse = reuse)
         pool1v = tf.layers.max_pooling1d(conv1v,pool_size = 2, strides = 2)
 

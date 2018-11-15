@@ -11,7 +11,7 @@ import os
 #from gym import wrappers
 
 #from parameters import ENV, FRAME_SKIP
-from mdp import ContinuousMDP
+from mdp2 import ContinuousMDP
 
 class Environment:
 

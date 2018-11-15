@@ -192,11 +192,11 @@ class ContinuousMDP:
         self.action = action
 
         delta_hdg = action * TORAD
-
+        '''
         if math.isnan(delta_hdg):
             print("Estoy en mdp.py, aqui hay un problema")
             print("la accion escogida es: ",action)
-
+        '''
         hdg, vmg = self.simulator.computeNewValues(delta_hdg, WH)
 
         self.s = np.array(

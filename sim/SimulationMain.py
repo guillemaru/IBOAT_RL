@@ -3,7 +3,7 @@ import math
 import numpy as np
 from Hysteresis import Hysteresis
 
-from sim import Simulator
+from sim import Simulator2
 
 # Conversion Constants
 TORAD = math.pi / 180
@@ -18,7 +18,7 @@ IMIN = 0+0.1001
 # Initalisation :
 delta_t=0.1
 t_history=10
-simulation = Simulator.Simulator(20, delta_t)
+simulation = Simulator2.Simulator(1, delta_t)
 
 # Note that we create one single speed calculator that we use to generate different experiences because it
 # saves the state of the flow and the previous incidences
@@ -41,12 +41,12 @@ print(simulation.time_step*simulation.size)
 # SIMULATION
 for i in range(simulation.getLength()):
     if i < simulation.getLength() / 2-1:
-        simulation.incrementDelayHdg(i, taustep, 1 * TORAD)
+        simulation.computeNewValues(1 * TORAD,WH)
     else:
-        simulation.incrementDelayHdg(i, taustep, -0.8 * TORAD)
+        simulation.computeNewValues(-0.8 * TORAD,WH)
 
-    RWH[i] = simulation.getHdg(i) + WH[i]
-    simulation.updateVMG(i, speedCalculator.calculateSpeed(RWH[i], WS))
+    #RWH[i] = simulation.getHdg(i) + WH[i]
+    #simulation.updateVMG(i, speedCalculator.calculateSpeed(RWH[i], WS))
 
 simulation.plot()
 

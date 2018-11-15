@@ -82,15 +82,17 @@ class mdp_realistic:
 
         self.action = action
         
-        
         if action == 0:
             delta_hdg = 1
         elif action == 1:
             delta_hdg = -1
         else:
             delta_hdg = 0
-
+        
+        #delta_hdg = action
+        
         self.simulator.U_hdg_ref.value = float(self.simulator.U_hdg_ref.value) + delta_hdg
+        
         i, sog = self.simulator.step(self.mdp_step, self.dt)
 
         self.s = np.array(
