@@ -3,21 +3,20 @@
 import tensorflow as tf
 import numpy as np
 
-#from random import *
 import random
 import math
 
 from QNetwork import Network
 from Environment import Environment
-#from EnvironmentRealistic import Environment
 from ExperienceBuffer import ExperienceBuffer
 from Displayer import DISPLAYER
 import parameters
 
 import sys
 sys.path.append("../../../sim/")
-from Simulator2 import TORAD
-from mdp2 import ContinuousMDP
+from Simulator import TORAD 
+from mdp import ContinuousMDP
+#change to Simulator and mdp to train with a simplified simulator 
 from environment import wind
 
 
@@ -43,7 +42,7 @@ class Agent:
         DISPLAYER.reset()
 
     def run(self):
-        self.load("NetworkParam_best_ThirdSemester/FinalParam")
+        #self.load("NetworkParam_best_ThirdSemester/FinalParam") #get the best parameters to start the training
         self.total_steps = 0
 
         '''
@@ -54,7 +53,6 @@ class Agent:
         wind_samples = 10
         w = wind(mean=mean, std=std, samples = wind_samples)
         WH = w.generateWind()
-        lista = [0,12]
 
         for ep in range(1, parameters.TRAINING_STEPS+1):
 
@@ -72,7 +70,7 @@ class Agent:
             # Initial state
             w = wind(mean=mean, std=std, samples = wind_samples)
             WH = w.generateWind()
-            hdg0_rand = random.uniform(10,13) #random.sample(hdg0_rand_vec, 1)[0] #random.choice(lista)
+            hdg0_rand = random.uniform(6,13) 
             hdg0 = hdg0_rand * TORAD * np.ones(10)
             s = self.env.reset(hdg0,WH)
             
@@ -94,15 +92,13 @@ class Agent:
                 #to respect the bounds:
                 a = np.clip(a, self.low_bound, self.high_bound)
                 
-                s_, v  = self.env.act(a,WH) #, done, info
+                s_, v  = self.env.act(a,WH)
                 
-                
+                #reward  assignation algorithm
                 if episode_step==1:
                     r=0
-                #elif s[int(self.state_size/2-2)]>(12*TORAD) and s[int(self.state_size/2-2)]<(16*TORAD) and v>0.64 and v<0.67 and s[int(self.state_size-5)]<s[int(self.state_size-2)] and a>0:
-                #    r=0.08
                 #elif s[int(self.state_size/2-2)]>(13*TORAD) and s[int(self.state_size/2-2)]<(15*TORAD) and v>0.63 and v<0.67 and a<0:
-                #    r=0.01
+                #    r=0.1
                 else:
                     if v<=0.69:
                         r=0
@@ -117,6 +113,7 @@ class Agent:
                         r=0.1
                         if nearlyDone>=3:
                             r=1
+                            done = True
                         elif nearlyDone==2:
                             r=0.8
                         elif nearlyDone==1:

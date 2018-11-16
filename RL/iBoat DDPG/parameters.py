@@ -8,8 +8,8 @@ DISCOUNT = 0.99
 FRAME_SKIP = 0
 
 
-ACTOR_LEARNING_RATE = 0.1e-4
-CRITIC_LEARNING_RATE = 0.1e-4
+ACTOR_LEARNING_RATE = 5e-4
+CRITIC_LEARNING_RATE = 5e-4
 
 # Memory size
 BUFFER_SIZE = 100000
@@ -27,7 +27,7 @@ UPDATE_TARGET_RATE = 0.01
 
 # scale of the exploration noise process (1.0 is the range of each action
 # dimension)
-NOISE_SCALE_INIT = 0.01
+NOISE_SCALE_INIT = 1
 
 # decay rate (per episode) of the scale of the exploration noise process
 NOISE_DECAY = 0.995

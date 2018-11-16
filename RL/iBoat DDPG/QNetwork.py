@@ -144,7 +144,7 @@ class Network:
 
         conv2i = tf.layers.conv1d(pool1i, filters=40, kernel_size=20, strides = 2,trainable=trainable, padding = "same",
                                     activation=tf.nn.relu, name='conv2i', reuse = reuse)
-        pool2i = tf.layers.max_pooling1d(conv2i,pool_size = 2, strides = 2) #shape [?,1,40]
+        pool2i = tf.layers.max_pooling1d(conv2i,pool_size = 2, strides = 2)
 
         conv1v = tf.layers.conv1d(states[:,61:121,:], filters = 50,kernel_size = 50, strides = 5, padding = "same", trainable=trainable,
                                  activation=tf.nn.relu, name='conv1v', reuse = reuse)
@@ -152,12 +152,12 @@ class Network:
 
         conv2v = tf.layers.conv1d(pool1v, filters=40, kernel_size=20, strides = 2,trainable=trainable, padding = "same",
                                     activation=tf.nn.relu, name='conv2v', reuse = reuse)
-        pool2v = tf.layers.max_pooling1d(conv2v,pool_size = 2, strides = 2) #shape [?,1,40]
+        pool2v = tf.layers.max_pooling1d(conv2v,pool_size = 2, strides = 2)
 
-        merge = tf.concat([pool2i, pool2v], axis=1) #shape [?,2,40]
-        merge_flat = tf.contrib.layers.flatten(merge) #shape [?,80]
+        merge = tf.concat([pool2i, pool2v], axis=1) 
+        merge_flat = tf.contrib.layers.flatten(merge) 
 
-        hidden1 = tf.layers.dense(inputs=merge_flat, units=256, activation=tf.nn.relu,trainable=trainable,name='dense1', reuse = reuse) #shape [?,256]
+        hidden1 = tf.layers.dense(inputs=merge_flat, units=256, activation=tf.nn.relu,trainable=trainable,name='dense1', reuse = reuse)
         #hidden1BN = tf.layers.batch_normalization(hidden1,center=True, scale=True)
 
         hidden2 = tf.layers.dense(hidden1, 32,
@@ -190,7 +190,7 @@ class Network:
 
         conv2i = tf.layers.conv1d(pool1i, filters=40, kernel_size=20, strides = 2,trainable=trainable, padding = "same",
                                     activation=tf.nn.relu, name='conv2i', reuse = reuse)
-        pool2i = tf.layers.max_pooling1d(conv2i,pool_size = 2, strides = 2) #shape [?,1,40]
+        pool2i = tf.layers.max_pooling1d(conv2i,pool_size = 2, strides = 2) 
 
         conv1v = tf.layers.conv1d(states[:,61:121,:], filters = 50,kernel_size = 50, strides = 5, padding = "same", trainable=trainable,
                                  activation=tf.nn.relu, name='conv1v', reuse = reuse)
@@ -198,14 +198,14 @@ class Network:
 
         conv2v = tf.layers.conv1d(pool1v, filters=40, kernel_size=20, strides = 2,trainable=trainable, padding = "same",
                                     activation=tf.nn.relu, name='conv2v', reuse = reuse)
-        pool2v = tf.layers.max_pooling1d(conv2v,pool_size = 2, strides = 2) #shape [?,1,40]
+        pool2v = tf.layers.max_pooling1d(conv2v,pool_size = 2, strides = 2) 
 
-        merge = tf.concat([pool2i, pool2v], axis=1) #shape [?,2,40]
-        merge_flat = tf.contrib.layers.flatten(merge) #shape [?,80]
+        merge = tf.concat([pool2i, pool2v], axis=1)
+        merge_flat = tf.contrib.layers.flatten(merge) 
         action_reshape = tf.reshape(actions, [-1,1])
         merge_with_action = tf.concat([merge_flat,action_reshape],axis=1)
 
-        hidden1 = tf.layers.dense(inputs=merge_with_action, units=256, activation=tf.nn.relu,trainable=trainable,name='hidden1', reuse = reuse) #shape [?,256]
+        hidden1 = tf.layers.dense(inputs=merge_with_action, units=256, activation=tf.nn.relu,trainable=trainable,name='hidden1', reuse = reuse)
         #hidden1 = tf.layers.dropout(inputs=hidden1, rate=0.5, training=trainable, name = 'dropout1')
         #hidden1BN = tf.layers.batch_normalization(hidden1,center=True, scale=True)
 

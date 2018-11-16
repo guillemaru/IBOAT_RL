@@ -75,7 +75,6 @@ class MDP:
 
         fill = np.zeros(int(self.size - self.simulator.size))
         self.s = np.array([np.concatenate([fill, self.simulator.hdg]), np.concatenate([fill, self.simulator.vmg])])
-        print("Estoy poniendo antes el fill que el heading y la velocidad")
 
         self.reward = np.sum(self.simulator.vmg) / self.simulator.size
         return self.s
@@ -173,12 +172,9 @@ class ContinuousMDP:
     def initializeMDP(self, hdg0, WH):
         self.simulator = Simulator2.Simulator(self.simulation_duration, self.dt)
         
-        # Delay of the dynamic
-        # be carefull with initialisation : due to delay we must initialize the taustep+1 first angles
         self.simulator.hdg = copy.deepcopy(hdg0)
         self.simulator.i[:] = hdg0[0]+WH[0]+self.simulator.sail_pos
         self.simulator.vmg[:] = self.simulator.hyst.calculateSpeed(self.simulator.i[0]) * math.cos(self.simulator.hdg_target - hdg0[0])
-        #self.simulator.computeNewValues(0, WH)
         fill = np.zeros(int(self.size - self.simulator.size))
         self.s = np.array([np.concatenate([fill, self.simulator.i]), np.concatenate([fill, self.simulator.vmg])])
         
@@ -193,11 +189,6 @@ class ContinuousMDP:
         self.action = action
 
         delta_hdg = action * TORAD
-        '''
-        if math.isnan(delta_hdg):
-            print("Estoy en mdp.py, aqui hay un problema")
-            print("la accion escogida es: ",action)
-        '''
         i, vmg = self.simulator.computeNewValues(delta_hdg, WH)
 
         self.s = np.array(

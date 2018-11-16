@@ -64,7 +64,7 @@ class NetworkArchitecture:
 
         # Flatten the output
         merge = tf.concat([self.conv2i,self.conv2v],axis=1)
-        flat_conv2 = tf.layers.flatten(merge)
+        flat_conv2 = tf.contrib.layers.flatten(merge)
         self.hidden = tf.layers.dense(flat_conv2, 256, activation=tf.nn.relu)
         #self.hidden2 = tf.layers.dense(self.hidden,32,activation=tf.nn.relu)
         return self.inputs

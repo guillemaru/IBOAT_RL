@@ -55,7 +55,6 @@ class Agent:
             self.name = 'Worker_' + str(worker_index)
 
         self.env = Environment()
-        #self.env.set_render(render)
         self.state_size = self.env.get_state_size()
         self.action_size = self.env.get_action_size()
         self.low_bound,self.high_bound = self.env.get_bounds()
@@ -135,7 +134,7 @@ class Agent:
         print("Running", self.name, end='\n\n')
         self.starting_time = time()
         self.nb_ep = 1
-
+        nearlyDone = 0
         with sess.as_default(), sess.graph.as_default():
 
             with coord.stop_on_exception():
@@ -159,12 +158,11 @@ class Agent:
                     wind_samples = 10
                     w = wind(mean=mean, std=std, samples = wind_samples)
                     WH = w.generateWind()
-                    hdg0_rand = random.uniform(6,14) 
+                    hdg0_rand = random.uniform(5,12) 
                     hdg0 = hdg0_rand * TORAD * np.ones(10)
                     s = self.env.reset(hdg0,WH)
                     
                     done = False
-                    #render = (self.nb_ep % settings.RENDER_FREQ == 0)
                     #if self.worker_index == 1 and render and settings.DISPLAY:
                     #    self.env.set_render(True)
 
@@ -178,7 +176,6 @@ class Agent:
                         
                         
                         WH = np.random.uniform(mean - std, mean + std, size=wind_samples)
-                        #print("The shape of s is: ",tf.shape(s))
                         s = np.reshape([s[0,:], s[1,:]], [2*self.state_size,1])
 
                         # Prediction of the policy and the value
@@ -191,36 +188,50 @@ class Agent:
 
 
                         if random.random() < self.epsilon:
-                            action = random.choice([2,-2])
-                            #action = np.clip(action, self.low_bound, self.high_bound)
+                            action = random.choice([1.5,0,-1.5])
 
                         else:
                             # Choose an action according to the policy
-                            action = np.random.choice([2,-2],
+                            action = np.random.choice([1.5,0,-1.5],
                                                       p=policy)
-                            #action = np.clip(action, self.low_bound, self.high_bound)
 
                         s_, v = self.env.act(action,WH)
                         
+                        #reward  assignation algorithm
                         if episode_step==1:
                             r=0
+                        elif s[int(self.state_size/2-2)]>(13*TORAD) and s[int(self.state_size/2-2)]<(15*TORAD) and v>0.63 and v<0.67 and action<0:
+                            r=0.5
                         else:
-                            if v<0.65:
-                                r=-0.05
-                            elif v>0.65 and v<=0.80:
+                            if v<=0.69:
                                 r=0
+                                nearlyDone = 0
+                            elif v>0.69 and v<=0.75:
+                                r=0.00001
+                                nearlyDone = 0
+                            elif v>0.75 and v<=0.8:
+                                r=0.01
+                                nearlyDone = 0
                             elif v>0.80:
-                                r=100
-                                done=True
+                                r=0.1
+                                if nearlyDone>=3:
+                                    r=1
+                                    done = True
+                                elif nearlyDone==2:
+                                    r=0.8
+                                elif nearlyDone==1:
+                                    r=0.25
+                                nearlyDone=nearlyDone+1
                             else:
                                 r=0
+                                nearlyDone = False
 
                         
                         #s_ = np.reshape(s_, [2*self.state_size,1])
 
                         # Store the experience
                         self.states_buffer.append(s)
-                        self.actions_buffer.append(action) #np.reshape(action, [1,1] )
+                        self.actions_buffer.append(action) 
                         self.rewards_buffer.append(r)
                         self.values_buffer.append(value)
                         self.mean_values_buffer.append(value)
@@ -277,10 +288,8 @@ class Agent:
                     if time() - self.starting_time > settings.LIMIT_RUN_TIME:
                         coord.request_stop()
 
-                    #self.env.set_render(False)
 
             self.summary_writer.close()
-            #self.env.close()
 
     def play(self, sess, number_run, path=''):
         print("Playing", self.name, "for", number_run, "runs")
@@ -327,7 +336,7 @@ class Agent:
                         policy = policy[0]
 
                         # Choose an action according to the policy
-                        action = np.random.choice([1,-1], p=policy)
+                        action = np.random.choice([1.5,0,-1.5], p=policy)
                         s_, r = self.env.act(action, WH)
                         if episode_step>12:
                             if np.mean(v_episode[-4:])>0.8:
@@ -343,15 +352,10 @@ class Agent:
 
                     print("Episode reward :", episode_reward)
 
-                    #if path != '':
-                    #    self.env.save_gif(path)
 
             except KeyboardInterrupt as e:
                 pass
 
             finally:
                 print("End of the demo")
-                #self.env.close()
 
-    #def close(self):
-    #    self.env.close()

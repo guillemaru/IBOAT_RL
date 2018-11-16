@@ -17,8 +17,8 @@ if __name__ == '__main__':
         
         print("Beginning of the run")
         try:
-            #print("I do not do the run")
-            agent.run()
+            print("I do not do the run")
+            #agent.run()
         except KeyboardInterrupt:
             agent.save("NetworkParam/FinalParam")
         print("End of the run")
@@ -26,5 +26,3 @@ if __name__ == '__main__':
 	    
         agent.playActor()
         agent.playCritic()
-
-    #agent.close()

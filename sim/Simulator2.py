@@ -118,7 +118,6 @@ class Simulator:
             else:
                 index = 0
             self.i[index] = (self.time_step/TAU)*self.RWH[jj]-(self.time_step/TAU)*self.i[jj]+self.i[jj] #pass through trans func to represent dynamics of the action
-            #print("RWH: ",self.RWH[jj]/TORAD,"hdg: ",self.hdg[jj]/TORAD,"WH: ",WH[jj]/TORAD,"i: ",self.i[index]/TORAD,"i[-1]: ",self.i[jj]/TORAD)
 
             # Saturation
             if self.i[jj] > IMAX:

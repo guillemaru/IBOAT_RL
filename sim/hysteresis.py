@@ -50,20 +50,16 @@ class Hysteresis:
 
         '''
         if self.e == 0 and i < i_decr:
-            #print("estoy attache")
             v = V_c(i)
             self.i_prev=i
         elif self.e == 0 and i >= i_decr:
-            #print("entro en perdida")
             self.e=1
             v=V_dc(i)
             self.i_prev=i
         elif self.e==1 and i>=i_recol:
-            #print("estoy en perdida")
             self.e=1
             v=V_dc(i)
         elif self.e==1 and i < i_recol:
-            #print("paso a estar attache")
             self.e=0
             v=V_c(i)
         else:

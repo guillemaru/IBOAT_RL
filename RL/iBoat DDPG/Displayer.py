@@ -9,8 +9,7 @@ def plotAndSave(saver, fig_name):
     for path, data in saver:
         plt.plot(data)
         plt.savefig(fig_name)
-    #plt.draw()
-    #plt.show()
+
 
 
 class Displayer:
@@ -24,10 +23,7 @@ class Displayer:
             self.dispR()
                     
     def dispR(self):
-        #mean_reward = [np.mean(self.rewards[max(1, i - 50):i])
-        #               for i in range(2, len(self.rewards))]
-        saver = [("results/", self.rewards)] #,
-                 #("results/Mean_reward", mean_reward)]
+        saver = [("results/", self.rewards)] 
         plotAndSave(saver, "results/Reward.png")
 
     def displayVI(self,vEpisode,iEpisode,nbPlay):

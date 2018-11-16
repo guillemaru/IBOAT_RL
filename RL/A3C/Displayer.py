@@ -71,19 +71,13 @@ class Displayer:
         save(saver, "results/Seq_reward.png")
 
     def displayVI(self,vEpisode,iEpisode,nbPlay):
-        #f, axarr = plt.subplots(2, sharex=True)
-        #axarr[0].plot(vEpisode)
-        #axarr[1].plot(iEpisode)
-        #axarr[0].set_ylabel("v")
-        #axarr[1].set_ylabel("i")
-        #plt.plot(vEpisode)
-        #plt.savefig("results/VI"+str(nbPlay)+"V.png")
-        #plt.plot(iEpisode)
-        #plt.savefig("results/VI"+str(nbPlay)+"I.png")
-        with open(str(nbPlay)+"V.txt","w") as output:
-            output.write(str(vEpisode))
-        with open(str(nbPlay)+"I.txt","w") as output:
-            output.write(str(iEpisode))  
+        f, axarr = plt.subplots(2, sharex=True)
+        axarr[0].plot(vEpisode)
+        axarr[1].plot(iEpisode)
+        axarr[0].set_ylabel("v")
+        axarr[1].set_ylabel("i")
+        plt.savefig("results/VI"+str(nbPlay)+".png")
+
 
 
 
