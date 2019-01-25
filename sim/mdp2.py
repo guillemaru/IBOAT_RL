@@ -2,6 +2,7 @@ import copy
 import math
 
 import Simulator2
+
 import numpy as np
 
 TORAD = math.pi / 180
@@ -65,7 +66,7 @@ class MDP:
         :rtype: np.array()
 
         """
-        self.simulator = Simulator.Simulator(self.simulation_duration, self.dt)
+        self.simulator = Simulator2.Simulator(self.simulation_duration, self.dt)
 
         # Delay of the dynamic
         # be carefull with initialisation : due to delay we must initialize the taustep+1 first angles
@@ -123,6 +124,10 @@ class MDP:
         return action
 
 
+#Simulator2 applies a more realistic simulator
+#Taking into account more physical phenomena being therefore less optimistic
+#This Simulator2 is used for DDPG therefore used in the below class ContinuousMDP
+
 class ContinuousMDP:
     """
         Markov Decision process modelization of the transition
@@ -171,7 +176,7 @@ class ContinuousMDP:
 
     def initializeMDP(self, hdg0, WH):
         self.simulator = Simulator2.Simulator(self.simulation_duration, self.dt)
-        
+        #initialize the scenario with a stablished incidence
         self.simulator.hdg = copy.deepcopy(hdg0)
         self.simulator.i[:] = hdg0[0]+WH[0]+self.simulator.sail_pos
         self.simulator.vmg[:] = self.simulator.hyst.calculateSpeed(self.simulator.i[0]) * math.cos(self.simulator.hdg_target - hdg0[0])
@@ -189,7 +194,7 @@ class ContinuousMDP:
         self.action = action
 
         delta_hdg = action * TORAD
-        i, vmg = self.simulator.computeNewValues(delta_hdg, WH)
+        i, vmg = self.simulator.computeNewValues(delta_hdg, WH) #key function computing next ten values of important variables
 
         self.s = np.array(
             [np.concatenate([self.s[0, self.idx_memory], i]),

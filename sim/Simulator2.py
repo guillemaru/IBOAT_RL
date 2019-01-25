@@ -20,7 +20,7 @@ BSSTALL = 1.5
 
 BSTRESH = 2.4
 
-TAU = 0.1
+TAU = 0.1 #variable for the transfer function
 
 
 class Simulator:
@@ -111,7 +111,7 @@ class Simulator:
         saturationMin = False
         saturationMax =False
 
-        for jj in range(self.size): #jj = 0 1 2 3 4 5 6 7 8 9
+        for jj in range(self.size): 
             self.RWH[jj] = self.hdg[jj] + WH[jj] + self.sail_pos
             if jj<(self.size-1): 
                 index = jj+1 
