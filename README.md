@@ -82,6 +82,7 @@ In this repo, all the files finishing by Main.py are test files.
   In folder DQN:
     * policyLearningMain.py - train a network to learn the Q-values of a policy.
     * dqnMain.py - find the optimal policy to control the Iboat using the DQN algorithm (discret set of actions).
+    
   In folder DDPG (either for Pendulum, Acrobot or iBoat):
     * main.py - create an agent, train and test a desired policy.
     * Agent.py - allows the agent to be built and perform the training algorithm.
