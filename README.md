@@ -42,7 +42,7 @@ a **marked decrease of the boat's speed**.
 Hysteresis such as stall are hard to model. We therefore propose an **end-to-end controller** which learns the stall behavior and
 builds a policy that avoids it. Learning is performed on a simplified transition model representing the stochastic environment and the dynamic of the boat.
 
-Learning is performed on two types of simulators. A **proof of concept** is first carried out on a simplified simulator of the boat coded in Python. The second phase of the project consist of trying to control a **more realisitic**  model of the boat. For this purpose we use a dynamic library which is derived using the Code Generation tools in Simulink. The executable C are then feeded to Python using the "ctypes" library.
+Learning is performed on three types of simulators. A **proof of concept** is first carried out on a simplified simulator of the boat coded in Python. The second phase of the project consist of trying to control a **more realisitic**  model of the boat. For this purpose we use a dynamic library which is derived using the Code Generation tools in Simulink. The executable C are then feeded to Python using the "ctypes" library. To test curriculum learning, an **advanced simulator** is used, containing more realistic phenomena than the proof of concept simulator and developed in Python.
 
 ## Prerequisites and code documentation
 
@@ -57,7 +57,8 @@ The documentation as well as the prerequisites can be found on the following web
 This repositroy is intended to be a **source of information** for future work on end-to-end control of system with large hysteresis. It provides a solid base to dig further on this topic. The tools that are provided are the following :
 
 - A realistic and fast simulator implemented in C++.
-- Two reinforcement learning algorithms which have been tested on a simplified simulator.
+- State-of-the-art reinforcement learning algorithms which have been tested on a simplified and advanced simulator.
+- A version of these algorithms for popular OpenAI gym environments.
 - A fully integrated environment to play with these tools.
 
 ## Getting started
@@ -73,14 +74,18 @@ And open the file in the tutorial folder.
 In this repo, all the files finishing by Main.py are test files. 
 
 - In package sim, the following files can be run to generate simulations and understand how they work:
-    * [SimulationMain.py](SimulationMain.py) - generate a simulation using the simplified simulator.
-    * [MDPMain.py](MDPMain.py) - generate trajectories via mdp transitions and using the simplified simulator.
-    * [Realistic_MDPMain.py](Realistic_MDPMain.py) - generate trajectories via mdp transitions and using the realistic      simulator.
+    * SimulationMain.py - generate a simulation using the simplified simulator.
+    * MDPMain.py - generate trajectories via mdp transitions and using the simplified simulator.
+    * Realistic_MDPMain.py - generate trajectories via mdp transitions and using the realistic      simulator.
   
 - In package RL, the following files can be run to train models:
-    * [policyLearningMain.py](policyLearningMain.py) - train a network to learn the Q-values of a policy.
-    * [dqnMain.py](dqnMain.py) - find the optimal policy to control the Iboat using the DQN algorithm (discret set of actions).
-    * [DDPGMain.py](DDPGMain.py) - find the optimal policy to control the Iboat using the DDPG algorithm (continuous set of actions).
+  In folder DQN:
+    * policyLearningMain.py - train a network to learn the Q-values of a policy.
+    * dqnMain.py - find the optimal policy to control the Iboat using the DQN algorithm (discret set of actions).
+  In folder DDPG (either for Pendulum, Acrobot or iBoat):
+    * main.py - create an agent, train and test a desired policy.
+    * Agent.py - allows the agent to be built and perform the training algorithm.
+    * QNetwork.py - Actor and Critic architecture definition. DDPG optimisation algorithm.
 
 ## Teaser
 
@@ -93,6 +98,14 @@ Optimal control found using DQN-algorithm on a simplified environment of the boa
 <p align="center">
   <img src="img/deltaq_values.gif" width="800" title="DQN control with ΔQ-values representation">
 </p>
+
+Optimal control using continuous actions in 3 scenarios. Starting incidence 5º, 
+![alt text](https://github.com/guillemaru/IBOAT_RL/blob/master/RL/DDPG/iBoat%20DDPG/results_best_ThirdSemester/VI0.png)
+starting incidence 12º 
+![alt text](https://github.com/guillemaru/IBOAT_RL/blob/master/RL/DDPG/iBoat%20DDPG/results_best_ThirdSemester/VI1.png)
+and starting incidence 17º (start at stall).
+![alt text](https://github.com/guillemaru/IBOAT_RL/blob/master/RL/DDPG/iBoat%20DDPG/results_best_ThirdSemester/VI2.png)
+
 
 
 ## Built With
@@ -126,6 +139,7 @@ This project has been carried out with the help of:
 
 ## Authors
 
+* **Guillermo Marugán** - *Work continuation* - Implementation of DDPG and A3C algorithms. Implementation of a second realistic simulator. Successful DDPG control in every problematic situation.
 * **Tristan Karch** - *Initial work* - Implementation of simplified simulator and proof of concept with Deep Q-Learning algorithm. Also responsible for the documentation management.
 * **Nicolas Megel** - Implementation of DDPG algorithm and responsible for the project management.
 * **Albert Bonet** - Simulink expert responsible for the realisitic simulator implementation and compilation.
