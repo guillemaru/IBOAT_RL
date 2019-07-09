@@ -101,11 +101,17 @@ Optimal control found using DQN-algorithm on a simplified environment of the boa
   <img src="img/deltaq_values.gif" width="800" title="DQN control with ΔQ-values representation">
 </p>
 
-Optimal control using continuous actions in 3 scenarios. Starting incidence 5º, 
+Optimal control using continuous actions in 3 scenarios. 
+1) Starting incidence 5º
+
 ![alt text](https://github.com/guillemaru/IBOAT_RL/blob/master/RL/DDPG/iBoat%20DDPG/results_best_ThirdSemester/VI0.png)
-starting incidence 12º 
+
+2) Starting incidence 12º 
+
 ![alt text](https://github.com/guillemaru/IBOAT_RL/blob/master/RL/DDPG/iBoat%20DDPG/results_best_ThirdSemester/VI1.png)
-and starting incidence 17º (start at stall).
+
+3) Starting incidence 17º (start at stall).
+
 ![alt text](https://github.com/guillemaru/IBOAT_RL/blob/master/RL/DDPG/iBoat%20DDPG/results_best_ThirdSemester/VI2.png)
 
 
