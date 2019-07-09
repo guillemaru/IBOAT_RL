@@ -79,6 +79,7 @@ In this repo, all the files finishing by Main.py are test files.
     * Realistic_MDPMain.py - generate trajectories via mdp transitions and using the realistic      simulator.
   
 - In package RL, the following files can be run to train models:
+  
   In folder DQN:
     * policyLearningMain.py - train a network to learn the Q-values of a policy.
     * dqnMain.py - find the optimal policy to control the Iboat using the DQN algorithm (discret set of actions).
