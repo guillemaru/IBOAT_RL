@@ -104,15 +104,21 @@ Optimal control found using DQN-algorithm on a simplified environment of the boa
 Optimal control using continuous actions in 3 scenarios. 
 1) Starting incidence 5º
 
-![alt text](https://github.com/guillemaru/IBOAT_RL/blob/master/RL/DDPG/iBoat%20DDPG/results_best_ThirdSemester/VI0.png)
+<p align="center">
+  <img width="460" height="300" src="https://github.com/guillemaru/IBOAT_RL/blob/master/RL/DDPG/iBoat%20DDPG/results_best_ThirdSemester/VI0.png">
+</p>
 
 2) Starting incidence 12º 
 
-![alt text](https://github.com/guillemaru/IBOAT_RL/blob/master/RL/DDPG/iBoat%20DDPG/results_best_ThirdSemester/VI1.png)
+<p align="center">
+  <img width="460" height="300" src="https://github.com/guillemaru/IBOAT_RL/blob/master/RL/DDPG/iBoat%20DDPG/results_best_ThirdSemester/VI1.png">
+</p>
 
 3) Starting incidence 17º (start at stall).
 
-![alt text](https://github.com/guillemaru/IBOAT_RL/blob/master/RL/DDPG/iBoat%20DDPG/results_best_ThirdSemester/VI2.png)
+<p align="center">
+  <img width="460" height="300" src="https://github.com/guillemaru/IBOAT_RL/blob/master/RL/DDPG/iBoat%20DDPG/results_best_ThirdSemester/VI2.png">
+</p>
 
 
 
